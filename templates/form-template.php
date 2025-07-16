@@ -1,0 +1,420 @@
+<div class="evs-offerte-formulier-container">
+    <div class="evs-header">
+        <div class="evs-logo">
+            <i class="evs-icon"></i> Offerte
+        </div>
+        <h1>Offerte aanvragen</h1>
+        <p class="evs-subtitle">Vul binnen een minuut de offerte in en ontvang binnen 8 uur een prijsindicatie</p>
+    </div>
+
+    <form id="evs-offerte-formulier" class="evs-multi-step-form">
+        <!-- Progress indicator -->
+        <div class="evs-progress-sidebar">
+            <!-- Horizontale voortgangsbalk -->
+            <div class="evs-progress-bar-container">
+                <div class="evs-progress-bar" style="width: 14%;"></div>
+            </div>
+
+            <div class="evs-progress-item active" data-step="1">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 5H21V19H3V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7 9L7 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M11 9L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M15 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M19 9L19 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Soort vloerverwarming</span>
+            </div>
+            <div class="evs-progress-item" data-step="2">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Type woning</span>
+            </div>
+            <div class="evs-progress-item" data-step="3">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M3 9H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M9 21L9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Type vloer</span>
+            </div>
+            <div class="evs-progress-item" data-step="4">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4H20V20H4V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 9H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M9 20L9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 15L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Hoeveel m²</span>
+            </div>
+            <div class="evs-progress-item" data-step="5">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Warmtebron</span>
+            </div>
+            <div class="evs-progress-item" data-step="6">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M3 9H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M9 21L9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Vloer dichtsmeren</span>
+            </div>
+            <div class="evs-progress-item" data-step="7">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M16 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Montagedatum</span>
+            </div>
+        </div>
+
+        <!-- Form steps -->
+        <div class="evs-form-steps-container">
+            <!-- Step 1: Soort vloerverwarming -->
+            <div class="evs-form-step active" data-step="1">
+                <div class="evs-step-content">
+                    <h2>Soort vloerverwarming</h2>
+                    <div class="evs-options-container">
+                        <label class="evs-option-card">
+                            <input type="radio" name="soort_vloerverwarming" value="laten_frezen" required>
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Laten frezen</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="soort_vloerverwarming" value="op_krimpnetten">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Op krimpnetten</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="evs-form-navigation">
+                    <button type="button" class="evs-next-btn">Doorgaan</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Type woning -->
+            <div class="evs-form-step" data-step="2">
+                <div class="evs-step-content">
+                    <h2>Wat is jouw type woning?</h2>
+                    <div class="evs-options-container">
+                        <label class="evs-option-card">
+                            <input type="radio" name="type_woning" value="bestaande_woning" required>
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Bestaande woning</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="type_woning" value="nieuwbouw_woning">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Nieuwbouw woning</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="type_woning" value="appartement">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Appartement</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="evs-form-navigation">
+                    <button type="button" class="evs-prev-btn">Terug</button>
+                    <button type="button" class="evs-next-btn">Doorgaan</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Type vloer -->
+            <div class="evs-form-step" data-step="3">
+                <div class="evs-step-content">
+                    <h2>Type vloer</h2>
+                    <div class="evs-options-container">
+                        <label class="evs-option-card">
+                            <input type="radio" name="type_vloer" value="cementdek_vloer" required>
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Cementdek vloer</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="type_vloer" value="beton_vloer">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Beton vloer</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="type_vloer" value="fermacell_vloer">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Fermacell vloer</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="type_vloer" value="weet_niet">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Weet ik niet</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="evs-form-navigation">
+                    <button type="button" class="evs-prev-btn">Terug</button>
+                    <button type="button" class="evs-next-btn">Doorgaan</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Hoeveel m² -->
+            <div class="evs-form-step" data-step="4">
+                <div class="evs-step-content">
+                    <h2>Om hoeveel m² gaat het?</h2>
+                    <div class="evs-floor-section">
+                        <p class="evs-floor-label">Begane grond</p>
+                        <div class="evs-input-group">
+                            <input type="number" name="vierkante_meters" min="1" required>
+                            <span class="evs-input-suffix">m²</span>
+                        </div>
+                    </div>
+                    <div class="evs-add-floor">
+                        <a href="#" class="evs-add-floor-link">+ nog een verdieping toevoegen</a>
+                    </div>
+                </div>
+                <div class="evs-form-navigation">
+                    <button type="button" class="evs-prev-btn">Terug</button>
+                    <button type="button" class="evs-next-btn">Doorgaan</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Warmtebron -->
+            <div class="evs-form-step" data-step="5">
+                <div class="evs-step-content">
+                    <h2>Warmtebron</h2>
+                    <div class="evs-options-container">
+                        <label class="evs-option-card">
+                            <input type="radio" name="warmtebron" value="cv_ketel" required>
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">CV ketel</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="warmtebron" value="warmtepomp">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Warmtepomp</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="warmtebron" value="stadsverwarming">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Stadsverwarming</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="warmtebron" value="anders">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Anders</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="evs-form-navigation">
+                    <button type="button" class="evs-prev-btn">Terug</button>
+                    <button type="button" class="evs-next-btn">Doorgaan</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Vloer dichtsmeren -->
+            <div class="evs-form-step" data-step="6">
+                <div class="evs-step-content">
+                    <h2>Vloer dichtsmeren</h2>
+                    <div class="evs-options-container">
+                        <label class="evs-option-card">
+                            <input type="radio" name="vloer_dichtsmeren" value="ja" required>
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Ja</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="vloer_dichtsmeren" value="nee">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Nee</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="vloer_dichtsmeren" value="weet_niet">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Weet ik niet</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="evs-form-navigation">
+                    <button type="button" class="evs-prev-btn">Terug</button>
+                    <button type="button" class="evs-next-btn">Doorgaan</button>
+                </div>
+            </div>
+
+            <!-- Step 7: Montagedatum -->
+            <div class="evs-form-step" data-step="7">
+                <div class="evs-step-content">
+                    <h2>Montagedatum</h2>
+                    <div class="evs-options-container">
+                        <label class="evs-option-card">
+                            <input type="radio" name="montagedatum" value="zo_snel_mogelijk" required>
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Zo snel mogelijk</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="montagedatum" value="binnen_1_maand">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Binnen 1 maand</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="montagedatum" value="binnen_3_maanden">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Binnen 3 maanden</span>
+                            </div>
+                        </label>
+                        <label class="evs-option-card">
+                            <input type="radio" name="montagedatum" value="later">
+                            <div class="evs-option-content">
+                                <div class="evs-option-check"></div>
+                                <span class="evs-option-text">Later</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="evs-form-navigation">
+                    <button type="button" class="evs-prev-btn">Terug</button>
+                    <button type="button" class="evs-next-btn">Doorgaan</button>
+                </div>
+            </div>
+
+            <!-- Step 8: Contactgegevens -->
+            <div class="evs-form-step" data-step="8">
+                <div class="evs-step-content">
+                    <h2>Jouw gegevens</h2>
+                    <div class="evs-contact-form">
+                        <div class="evs-form-row">
+                            <div class="evs-form-group">
+                                <label for="email">E-mailadres*:</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="evs-form-group">
+                                <label for="telefoon">Telefoonnummer:</label>
+                                <input type="tel" id="telefoon" name="telefoon">
+                            </div>
+                        </div>
+                        <div class="evs-form-row">
+                            <div class="evs-form-group">
+                                <label for="voornaam">Voornaam*:</label>
+                                <input type="text" id="voornaam" name="voornaam" required>
+                            </div>
+                            <div class="evs-form-group">
+                                <label for="achternaam">Achternaam*:</label>
+                                <input type="text" id="achternaam" name="achternaam" required>
+                            </div>
+                        </div>
+
+                        <h3>Adres (van installatie)</h3>
+                        <div class="evs-form-row">
+                            <div class="evs-form-group">
+                                <label for="land">Land*:</label>
+                                <select id="land" name="land" required>
+                                    <option value="Nederland">Nederland</option>
+                                    <option value="België">België</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="evs-form-row">
+                            <div class="evs-form-group">
+                                <label for="adres">Adres*:</label>
+                                <input type="text" id="adres" name="adres" required>
+                            </div>
+                            <div class="evs-form-group">
+                                <label for="huisnummer">Huisnummer*:</label>
+                                <input type="text" id="huisnummer" name="huisnummer" required>
+                            </div>
+                        </div>
+                        <div class="evs-form-row">
+                            <div class="evs-form-group">
+                                <label for="postcode">Postcode*:</label>
+                                <input type="text" id="postcode" name="postcode" required>
+                            </div>
+                            <div class="evs-form-group">
+                                <label for="plaats">Plaats*:</label>
+                                <input type="text" id="plaats" name="plaats" required>
+                            </div>
+                        </div>
+                        <div class="evs-form-row">
+                            <div class="evs-form-group full-width">
+                                <label for="toelichting">Eventuele toelichting:</label>
+                                <textarea id="toelichting" name="toelichting" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="evs-form-row">
+                            <div class="evs-form-group full-width">
+                                <label class="evs-checkbox-container">
+                                    <input type="checkbox" name="privacy_akkoord" required>
+                                    <span class="evs-checkmark"></span>
+                                    <span class="evs-checkbox-text">Ik ga akkoord met de <a href="/privacy-policy" target="_blank">privacyverklaring</a>*</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="evs-form-navigation">
+                    <button type="button" class="evs-prev-btn">Terug</button>
+                    <button type="submit" class="evs-submit-btn">Offerte versturen</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Success message (hidden by default) -->
+    <div id="evs-success-message" class="evs-success-message" style="display: none;">
+        <div class="evs-success-icon">✓</div>
+        <h2>Bedankt voor je aanvraag!</h2>
+        <p>Je ontvangt binnen 8 uur een prijsindicatie op het opgegeven e-mailadres.</p>
+    </div>
+</div>

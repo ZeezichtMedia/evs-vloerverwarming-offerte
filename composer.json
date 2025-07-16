@@ -1,0 +1,16 @@
+{
+    "name": "evs/vloerverwarmingen",
+    "description": "EVS Vloerverwarmingen Offerte System",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "vlucas/phpdotenv": "^5.5",
+        "supabase/supabase-php": "^1.0",
+        "swiftmailer/swiftmailer": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "EVS\\": "src/"
+        }
+    }
+}

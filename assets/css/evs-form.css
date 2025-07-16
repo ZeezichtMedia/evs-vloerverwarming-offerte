@@ -1,0 +1,574 @@
+/* EVS Vloerverwarming Offerte Formulier Stijlen */
+
+/* Algemene container */
+.evs-offerte-formulier-container {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    max-width: 1000px;
+    margin: 40px auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.evs-header {
+    padding: 25px 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.evs-logo {
+    color: #dc3545;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.evs-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #dc3545;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.evs-header h1 {
+    font-size: 28px;
+    margin: 0 0 5px 0;
+    color: #222;
+}
+
+.evs-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+/* Multi-step form layout */
+.evs-multi-step-form {
+    display: flex;
+    min-height: 550px;
+}
+
+.evs-progress-sidebar {
+    width: 280px;
+    background-color: #fff;
+    border-right: 1px solid #eee;
+    padding: 20px;
+}
+
+.evs-form-steps-container {
+    flex: 1;
+    position: relative;
+    padding: 30px;
+}
+
+/* Progress indicator */
+.evs-progress-item {
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.evs-progress-item:hover {
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.evs-progress-item.active {
+    background-color: rgba(220, 53, 69, 0.1);
+    font-weight: 600;
+    color: #c82333;
+    border-left: 4px solid #dc3545;
+}
+
+.evs-progress-item.completed {
+    color: #dc3545;
+}
+
+.evs-progress-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #495057;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.evs-progress-item.active .evs-progress-icon {
+    background-color: #dc3545;
+    color: white;
+}
+
+.evs-progress-item.completed .evs-progress-icon {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+}
+
+.evs-progress-item.completed .evs-progress-icon:after {
+    content: '✓';
+    font-size: 16px;
+}
+
+.evs-progress-text {
+    font-size: 15px;
+}
+
+/* Form steps */
+.evs-form-step {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.evs-form-step.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.evs-step-content {
+    margin-bottom: 30px;
+}
+
+.evs-step-content h2 {
+    font-size: 24px;
+    margin: 0 0 25px 0;
+    color: #333;
+}
+
+/* Progress bar for mobile */
+.evs-progress-bar-container {
+    display: none; /* Hidden on desktop */
+    width: 100%;
+    background-color: #e9ecef;
+    height: 8px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.evs-progress-bar {
+    height: 100%;
+    background-color: #dc3545;
+    transition: width 0.4s ease;
+}
+
+/* General Form Styling */
+.evs-options-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.evs-option-card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.evs-option-card:hover {
+    border-color: #c82333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.evs-option-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.evs-option-card.selected {
+    border-color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.05);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+}
+
+.evs-option-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.evs-option-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #adb5bd;
+    margin-right: 15px;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.evs-option-card.selected .evs-option-check {
+    border-color: #dc3545;
+    background-color: #dc3545;
+}
+
+.evs-option-card.selected .evs-option-check:after {
+    content: "";
+    position: absolute;
+    display: block;
+    /* Adjust positioning for perfect centering */
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 12px; /* Adjusted height for better proportion */
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: translate(-50%, -60%) rotate(45deg); /* Fine-tuned transform */
+}
+
+.evs-option-text {
+    font-size: 16px;
+    color: #343a40;
+    font-weight: 500;
+}
+
+.evs-option-card.selected .evs-option-text {
+    color: #c82333;
+}
+
+/* Input fields */
+.evs-input-group, .evs-form-group {
+    margin-bottom: 20px;
+}
+
+.evs-input-group label, .evs-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    color: #495057;
+}
+
+.evs-input-wrapper {
+    display: flex;
+    align-items: center;
+    max-width: 300px;
+}
+
+.evs-form-input, .evs-form-group input, .evs-form-group select, .evs-form-group textarea {
+    width: 100%;
+    padding: 18px 14px; /* Adjusted padding to match option cards */
+    border: 1px solid #ced4da;
+    border-radius: 6px; /* Match option cards */
+    font-size: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box; /* Ensure padding is included in height */
+}
+
+.evs-form-input:focus, .evs-form-group input:focus, .evs-form-group select:focus, .evs-form-group textarea:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+    outline: none;
+}
+
+.evs-input-suffix {
+    padding: 0 12px;
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Contact form layout */
+.evs-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.evs-form-group {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 200px;
+}
+
+.evs-form-group.evs-form-group-short {
+    flex: 0 1 120px;
+}
+
+/* Conditional Questions */
+.evs-conditional-question {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    display: none; /* Hidden by default */
+    flex-wrap: wrap;
+    gap: 15px 20px;
+    align-items: center;
+}
+
+.evs-conditional-question.visible {
+    display: flex;
+}
+
+.evs-conditional-question .evs-input-label {
+    flex: 1 1 250px;
+    margin: 0;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.evs-conditional-question .evs-options-container {
+    flex: 2 1 300px;
+    max-width: none;
+    display: flex;
+    gap: 15px;
+}
+
+.evs-conditional-question .evs-option-card {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    justify-content: center;
+}
+
+.evs-conditional-question .evs-option-check {
+    display: none; /* Hide radio circle in yes/no */
+}
+
+/* Checkbox Styling */
+.evs-checkbox-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.evs-checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.evs-checkmark {
+    height: 22px;
+    width: 22px;
+    background-color: #fff;
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    margin-right: 12px;
+}
+
+.evs-checkbox-container:hover .evs-checkmark {
+    border-color: #dc3545;
+}
+
+.evs-checkbox-container input:checked ~ .evs-checkmark {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.evs-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 8px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+.evs-checkbox-container input:checked ~ .evs-checkmark:after {
+    display: block;
+}
+
+.evs-checkbox-text a {
+    color: #dc3545;
+    text-decoration: none;
+}
+.evs-checkbox-text a:hover {
+    text-decoration: underline;
+}
+
+/* Navigation buttons */
+.evs-form-navigation {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.evs-prev-btn,
+.evs-next-btn,
+.evs-submit-btn {
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.evs-prev-btn {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    color: #343a40;
+}
+
+.evs-prev-btn:hover {
+    background-color: #e9ecef;
+}
+
+.evs-next-btn,
+.evs-submit-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.evs-next-btn:hover,
+.evs-submit-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+/* Success message */
+.evs-success-message {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.evs-success-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 25px;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .evs-multi-step-form {
+        flex-direction: column;
+    }
+    .evs-progress-sidebar {
+        display: none;
+    }
+    .evs-progress-bar-container {
+        display: block;
+    }
+    .evs-form-steps-container {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .evs-form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .evs-form-group {
+        margin-bottom: 15px;
+    }
+    .evs-step-content h2 {
+        font-size: 22px;
+    }
+    .evs-form-navigation {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+    .evs-prev-btn, .evs-next-btn, .evs-submit-btn {
+        width: 100%;
+    }
+    .evs-conditional-question {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .evs-conditional-question .evs-options-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .evs-offerte-formulier-container {
+        margin: 10px;
+    }
+    .evs-header h1 {
+        font-size: 22px;
+    }
+    .evs-subtitle {
+        font-size: 14px;
+    }
+    .evs-form-steps-container {
+        padding: 15px;
+    }
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Verbeterde toegankelijkheid */
+.evs-option-card:focus-within {
+    outline: 2px solid #dc3545;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.3);
+}
+
+input:focus, 
+select:focus, 
+textarea:focus {
+    outline: 2px solid #dc3545;
+    border-color: #dc3545;
+}
+
+/* Verbeterde printbaarheid */
+@media print {
+    body {
+        background-color: #fff;
+    }
+    .evs-offerte-formulier-container, .evs-header, .evs-multi-step-form {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    .evs-prev-btn, .evs-next-btn, .evs-submit-btn, .evs-progress-sidebar {
+        display: none;
+    }
+}
