@@ -5,9 +5,9 @@
     "require": {
         "php": ">=7.4",
         "vlucas/phpdotenv": "^5.5",
-        "supabase/supabase-php": "^1.0",
+        "supabase/supabase-php": "^0.0.3",
         "swiftmailer/swiftmailer": "^6.3",
-        "fpdf/fpdf": "1.8.6"
+        "fpdf/fpdf": "^1.86"
     },
     "autoload": {
         "psr-4": {

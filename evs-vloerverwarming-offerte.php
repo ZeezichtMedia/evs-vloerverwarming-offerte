@@ -852,6 +852,67 @@ class EVS_Vloerverwarming_Offerte {
     /**
      * Slaat de wijzigingen van een offerte op.
      */
+    /**
+     * Verwerkt het verzenden van de offerte.
+     */
+    private function handle_send_quote($offer_id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'evs_offertes';
+        $offer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $offer_id), ARRAY_A);
+
+        if (!$offer) {
+            $this->log_error('Kan offerte niet verzenden: offerte niet gevonden.', ['offer_id' => $offer_id]);
+            return;
+        }
+
+        require_once plugin_dir_path(__FILE__) . 'admin/class-evs-pdf-generator.php';
+
+        // Maak een tijdelijke map voor de PDFs
+        $upload_dir = wp_upload_dir();
+        $temp_pdf_dir = $upload_dir['basedir'] . '/evs-temp-pdfs';
+        if (!file_exists($temp_pdf_dir)) {
+            wp_mkdir_p($temp_pdf_dir);
+        }
+
+        // Genereer PDF voor infrezen
+        $pdf_drilling = new EVS_PDF_Generator();
+        $pdf_drilling->generate_quote_pdf($offer, 'drilling');
+        $drilling_filename = $temp_pdf_dir . '/offerte-' . $offer_id . '-infrezen.pdf';
+        $pdf_drilling->Output('F', $drilling_filename);
+
+        // Genereer PDF voor dichtsmeren
+        $pdf_sealing = new EVS_PDF_Generator();
+        $pdf_sealing->generate_quote_pdf($offer, 'sealing');
+        $sealing_filename = $temp_pdf_dir . '/offerte-' . $offer_id . '-dichtsmeren.pdf';
+        $pdf_sealing->Output('F', $sealing_filename);
+
+        // Stel e-mail op
+        $to = $offer['customer_email'];
+        $subject = 'Uw offerte van EVS Vloerverwarmingen';
+        $body = 'Beste ' . $offer['customer_name'] . ",\n\n";
+        $body .= "In de bijlage vindt u de offertes voor het infrezen en dichtsmeren van de vloerverwarming.\n\n";
+        $body .= "Met vriendelijke groet,\n";
+        $body .= "Het team van EVS Vloerverwarmingen";
+        $headers = ['Content-Type: text/plain; charset=UTF-8'];
+        $attachments = [$drilling_filename, $sealing_filename];
+
+        // Verstuur de e-mail
+        $sent = wp_mail($to, $subject, $body, $headers, $attachments);
+
+        // Verwijder de tijdelijke bestanden
+        unlink($drilling_filename);
+        unlink($sealing_filename);
+
+        if ($sent) {
+            // Update de status van de offerte naar 'verzonden'
+            $wpdb->update(
+                $table_name,
+                ['status' => 'sent'],
+                ['id' => $offer_id]
+            );
+        }
+    }
+
     private function save_offer_changes($offer_id, $data) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'evs_offertes';
@@ -878,6 +939,12 @@ class EVS_Vloerverwarming_Offerte {
         if (isset($_POST['evs_update_offer_nonce']) && wp_verify_nonce($_POST['evs_update_offer_nonce'], 'evs_update_offer_' . $offer_id)) {
             $this->save_offer_changes($offer_id, $_POST);
             echo '<div class="updated"><p>Offerte bijgewerkt!</p></div>';
+        }
+
+        // Offerte verzenden als het formulier is ingediend
+        if (isset($_POST['evs_send_offer_nonce']) && wp_verify_nonce($_POST['evs_send_offer_nonce'], 'evs_send_offer_' . $offer_id)) {
+            $this->handle_send_quote($offer_id);
+            echo '<div class="updated"><p>Offerte wordt verzonden...</p></div>';
         }
 
         $offer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $offer_id), ARRAY_A);
@@ -940,6 +1007,16 @@ class EVS_Vloerverwarming_Offerte {
 
                 <?php submit_button('Offerte Bijwerken'); ?>
             </form>
+
+            <hr>
+
+            <h2>Acties</h2>
+            <form method="post">
+                <input type="hidden" name="offer_id" value="<?php echo esc_attr($offer_id); ?>">
+                <?php wp_nonce_field('evs_send_offer_' . $offer_id, 'evs_send_offer_nonce'); ?>
+                <?php submit_button('Offerte Verzenden Naar Klant', 'primary', 'send_offer'); ?>
+            </form>
+
         </div>
         <?php
     }
@@ -974,6 +1051,22 @@ class EVS_Vloerverwarming_Offerte {
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
+
+        // Create invoices table
+        $table_name_invoices = $wpdb->prefix . 'evs_invoices';
+        $sql_invoices = "CREATE TABLE $table_name_invoices (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            quote_id mediumint(9) NOT NULL,
+            invoice_number varchar(255) NOT NULL,
+            created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            due_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            customer_name tinytext NOT NULL,
+            customer_email varchar(100) NOT NULL,
+            total_amount decimal(10, 2) NOT NULL,
+            status varchar(55) DEFAULT 'unpaid' NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+        dbDelta($sql_invoices);
     }
 }
 
