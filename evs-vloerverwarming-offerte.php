@@ -82,6 +82,9 @@ class EVS_Vloerverwarming_Offerte {
         // AJAX handler voor foutlogboek
         add_action('wp_ajax_log_evs_form_error', array($this, 'log_js_error'));
         add_action('wp_ajax_nopriv_log_evs_form_error', array($this, 'log_js_error'));
+
+        // Admin menu toevoegen
+        add_action('admin_menu', array($this, 'add_admin_menu'));
     }
     
     /**
@@ -374,31 +377,45 @@ class EVS_Vloerverwarming_Offerte {
     }
     
     /**
-     * Sla offerte op in de database
+     * Sla offerte op in de WordPress database.
      */
     private function save_quote_to_database($form_data, $quote) {
-        // Deze functie is optioneel en kan worden geïmplementeerd als je offertes wilt opslaan
-        // Hier zou je een custom database tabel kunnen gebruiken of custom post types
-        
-        // Voorbeeld met custom post type (moet eerst worden aangemaakt)
-        /*
-        $quote_data = array(
-            'post_title'    => 'Offerte - ' . $form_data['voornaam'] . ' ' . $form_data['achternaam'],
-            'post_status'   => 'publish',
-            'post_type'     => 'evs_offerte',
-        );
-        
-        $quote_id = wp_insert_post($quote_data);
-        
-        if (!is_wp_error($quote_id)) {
-            // Sla alle formuliergegevens op als post meta
-            foreach ($form_data as $key => $value) {
-                update_post_meta($quote_id, 'evs_' . $key, $value);
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'evs_offertes';
+
+        try {
+            $data_to_insert = array(
+                'created_at'        => current_time('mysql'),
+                'customer_name'     => $form_data['naam'],
+                'customer_email'    => $form_data['email'],
+                'floor_level'       => $form_data['soort_verdieping'],
+                'floor_level_other' => $form_data['andere_verdieping'] ?? '',
+                'floor_type'        => $form_data['type_vloer'],
+                'area'              => $form_data['oppervlakte'],
+                'heat_source'       => $form_data['warmtebron'],
+                'distributor'       => $form_data['verdeler_aansluiten'],
+                'sealing'           => $form_data['vloer_dichtsmeren'],
+                'floor_clean'       => $form_data['vloer_schoon'] ?? 'nee',
+                'installation_date' => $form_data['montagedatum'] ?? 'Onbekend',
+                'drilling_price'    => $quote['drilling_price'],
+                'sealing_price'     => $quote['sealing_price'],
+                'status'            => 'new',
+            );
+
+            $result = $wpdb->insert($table_name, $data_to_insert);
+
+            if ($result === false) {
+                $this->log_error('Database insertie mislukt', array('error' => $wpdb->last_error));
+                return false;
             }
-            
-            // Sla offerte details op
-            update_post_meta($quote_id, 'evs_quote_details', $quote);
-            update_post_meta($quote_id, 'evs_quote_date', current_time('mysql'));
+
+            return $wpdb->insert_id;
+
+        } catch (Exception $e) {
+            $this->log_error('Fout bij opslaan offerte', array('error' => $e->getMessage()));
+            return false;
+        }
+    }
             
             return $quote_id;
         }
@@ -788,5 +805,103 @@ class EVS_Vloerverwarming_Offerte {
 
 }
 
+    /**
+     * Voegt de admin menu pagina's toe.
+     */
+    public function add_admin_menu() {
+        add_menu_page(
+            'EVS Offertes',                         // Paginatitel
+            'Offertes',                             // Menutitel
+            'manage_options',                       // Benodigde capability (voor nu admin)
+            'evs-offertes',                         // Menu slug
+            array($this, 'display_offers_page'),    // Callback functie voor de pagina-inhoud
+            'dashicons-calculator',                 // Icoon
+            25                                      // Positie in het menu
+        );
+    }
+
+    /**
+     * Toont de hoofd offerte overzichtspagina of de bewerkpagina.
+     */
+    public function display_offers_page() {
+        require_once plugin_dir_path(__FILE__) . 'admin/class-evs-offertes-list-table.php';
+
+        $action = isset($_GET['action']) ? $_GET['action'] : 'list';
+        $offer_id = isset($_GET['offer']) ? intval($_GET['offer']) : 0;
+
+        switch ($action) {
+            case 'edit':
+                if ($offer_id > 0) {
+                    $this->display_edit_offer_page($offer_id);
+                }
+                break;
+            default:
+                echo '<div class="wrap">';
+                echo '<h1>Offerte Aanvragen</h1>';
+                $list_table = new EVS_Offertes_List_Table();
+                $list_table->prepare_items();
+                $list_table->display();
+                echo '</div>';
+                break;
+        }
+    }
+
+    /**
+     * Toont de bewerkpagina voor een specifieke offerte.
+     */
+    public function display_edit_offer_page($offer_id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'evs_offertes';
+        $offer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $offer_id), ARRAY_A);
+
+        if (!$offer) {
+            echo '<div class="wrap"><h1>Fout</h1><p>Offerte niet gevonden.</p></div>';
+            return;
+        }
+
+        echo '<div class="wrap">';
+        echo '<h1>Offerte Bewerken</h1>';
+        echo '<p>Hier komt binnenkort het formulier om de offerte te bewerken.</p>';
+        echo '<h2>Huidige Data:</h2>';
+        echo '<pre>' . esc_html(print_r($offer, true)) . '</pre>';
+        echo '</div>';
+    }
+
+    /**
+     * Wordt uitgevoerd bij het activeren van de plugin.
+     */
+    public static function on_activation() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'evs_offertes';
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE $table_name (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            customer_name tinytext NOT NULL,
+            customer_email varchar(100) NOT NULL,
+            floor_level varchar(55) DEFAULT '' NOT NULL,
+            floor_level_other varchar(255) DEFAULT '' NOT NULL,
+            floor_type varchar(55) DEFAULT '' NOT NULL,
+            area float NOT NULL,
+            heat_source varchar(55) DEFAULT '' NOT NULL,
+            distributor varchar(10) DEFAULT '' NOT NULL,
+            sealing varchar(10) DEFAULT '' NOT NULL,
+            floor_clean varchar(10) DEFAULT '' NOT NULL,
+            installation_date varchar(55) DEFAULT '' NOT NULL,
+            drilling_price decimal(10, 2) NOT NULL,
+            sealing_price decimal(10, 2) NOT NULL,
+            status varchar(55) DEFAULT 'new' NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+}
+
 // Start de plugin
 $evs_vloerverwarming_offerte = new EVS_Vloerverwarming_Offerte();
+
+// Registreer de activatie hook om de database tabel aan te maken
+register_activation_hook(__FILE__, array('EVS_Vloerverwarming_Offerte', 'on_activation'));
