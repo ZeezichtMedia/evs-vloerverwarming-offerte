@@ -849,22 +849,99 @@ class EVS_Vloerverwarming_Offerte {
     /**
      * Toont de bewerkpagina voor een specifieke offerte.
      */
+    /**
+     * Slaat de wijzigingen van een offerte op.
+     */
+    private function save_offer_changes($offer_id, $data) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'evs_offertes';
+
+        $update_data = array(
+            'customer_name'  => sanitize_text_field($data['customer_name']),
+            'customer_email' => sanitize_email($data['customer_email']),
+            'area'           => floatval($data['area']),
+            'drilling_price' => floatval($data['drilling_price']),
+            'sealing_price'  => floatval($data['sealing_price']),
+            'status'         => sanitize_text_field($data['status'])
+        );
+
+        $where = array('id' => $offer_id);
+
+        $wpdb->update($table_name, $update_data, $where);
+    }
+
     public function display_edit_offer_page($offer_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'evs_offertes';
+
+        // Gegevens opslaan als het formulier is ingediend
+        if (isset($_POST['evs_update_offer_nonce']) && wp_verify_nonce($_POST['evs_update_offer_nonce'], 'evs_update_offer_' . $offer_id)) {
+            $this->save_offer_changes($offer_id, $_POST);
+            echo '<div class="updated"><p>Offerte bijgewerkt!</p></div>';
+        }
+
         $offer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $offer_id), ARRAY_A);
 
         if (!$offer) {
             echo '<div class="wrap"><h1>Fout</h1><p>Offerte niet gevonden.</p></div>';
             return;
         }
+        ?>
+        <div class="wrap">
+            <h1>Offerte #<?php echo esc_html($offer_id); ?> Bewerken</h1>
+            <form method="post">
+                <input type="hidden" name="action" value="update_offer">
+                <input type="hidden" name="offer_id" value="<?php echo esc_attr($offer_id); ?>">
+                <?php wp_nonce_field('evs_update_offer_' . $offer_id, 'evs_update_offer_nonce'); ?>
 
-        echo '<div class="wrap">';
-        echo '<h1>Offerte Bewerken</h1>';
-        echo '<p>Hier komt binnenkort het formulier om de offerte te bewerken.</p>';
-        echo '<h2>Huidige Data:</h2>';
-        echo '<pre>' . esc_html(print_r($offer, true)) . '</pre>';
-        echo '</div>';
+                <h2>Klantgegevens</h2>
+                <table class="form-table">
+                    <tbody>
+                        <tr>
+                            <th scope="row"><label for="customer_name">Klantnaam</label></th>
+                            <td><input name="customer_name" type="text" id="customer_name" value="<?php echo esc_attr($offer['customer_name']); ?>" class="regular-text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="customer_email">Email</label></th>
+                            <td><input name="customer_email" type="email" id="customer_email" value="<?php echo esc_attr($offer['customer_email']); ?>" class="regular-text"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Offertedetails</h2>
+                <table class="form-table">
+                    <tbody>
+                        <tr>
+                            <th scope="row"><label for="area">Oppervlakte (m²)</label></th>
+                            <td><input name="area" type="number" step="0.01" id="area" value="<?php echo esc_attr($offer['area']); ?>" class="small-text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="drilling_price">Prijs Infrezen (€)</label></th>
+                            <td><input name="drilling_price" type="number" step="0.01" id="drilling_price" value="<?php echo esc_attr($offer['drilling_price']); ?>" class="small-text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="sealing_price">Prijs Dichtsmeren (€)</label></th>
+                            <td><input name="sealing_price" type="number" step="0.01" id="sealing_price" value="<?php echo esc_attr($offer['sealing_price']); ?>" class="small-text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="status">Status</label></th>
+                            <td>
+                                <select name="status" id="status">
+                                    <option value="new" <?php selected($offer['status'], 'new'); ?>>Nieuw</option>
+                                    <option value="sent" <?php selected($offer['status'], 'sent'); ?>>Verzonden</option>
+                                    <option value="accepted" <?php selected($offer['status'], 'accepted'); ?>>Geaccepteerd</option>
+                                    <option value="invoiced" <?php selected($offer['status'], 'invoiced'); ?>>Gefactureerd</option>
+                                    <option value="cancelled" <?php selected($offer['status'], 'cancelled'); ?>>Geannuleerd</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <?php submit_button('Offerte Bijwerken'); ?>
+            </form>
+        </div>
+        <?php
     }
 
     /**
