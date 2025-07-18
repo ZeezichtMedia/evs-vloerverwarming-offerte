@@ -44,8 +44,8 @@ class EVS_Offertes_List_Table extends WP_List_Table {
 
     function column_customer_name($item) {
         $actions = array(
-            'edit'      => sprintf('<a href="?page=%s&action=%s&offer=%s">Bewerken</a>', $_REQUEST['page'], 'edit', $item['id']),
-            'delete'    => sprintf('<a href="?page=%s&action=%s&offer=%s">Verwijderen</a>', $_REQUEST['page'], 'delete', $item['id']),
+            'edit'      => sprintf('<a href="?page=%s&action=%s&offer_id=%s">Bewerken</a>', $_REQUEST['page'], 'edit', $item['id']),
+            'delete'    => sprintf('<a href="?page=%s&action=%s&offer_id=%s">Verwijderen</a>', $_REQUEST['page'], 'delete', $item['id']),
         );
         return sprintf('%1$s %2$s', $item['customer_name'], $this->row_actions($actions) );
     }

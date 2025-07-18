@@ -1,8 +1,13 @@
 <?php
 
-require_once plugin_dir_path(__DIR__) . 'vendor/fpdf/fpdf.php';
+// Only proceed if FPDF is available
+if (!class_exists('Fpdf\Fpdf')) {
+    return;
+}
 
-class EVS_PDF_Generator extends FPDF {
+use Fpdf\Fpdf;
+
+class EVS_PDF_Generator extends Fpdf {
 
     private $company_details;
 

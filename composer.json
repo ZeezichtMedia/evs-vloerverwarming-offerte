@@ -1,13 +1,9 @@
 {
     "name": "evs/vloerverwarmingen",
-    "description": "EVS Vloerverwarmingen Offerte System",
-    "type": "project",
+    "description": "EVS Vloerverwarmingen Offerte WordPress Plugin",
+    "type": "wordpress-plugin",
     "require": {
-        "php": ">=7.4",
-        "vlucas/phpdotenv": "^5.5",
-        "supabase/supabase-php": "^0.0.3",
-        "swiftmailer/swiftmailer": "^6.3",
-        "fpdf/fpdf": "^1.86"
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {

@@ -140,14 +140,46 @@ jQuery(document).ready(function($) {
         $submitButton.prop('disabled', true).text('Verzenden...');
         $formMessages.removeClass('success error').empty().hide();
 
-        var formData = $form.serialize();
-        formData += '&action=evs_vloerverwarming_offerte_submit';
-        formData += '&nonce=' + (typeof evs_offerte_ajax_object !== 'undefined' ? evs_offerte_ajax_object.nonce : '');
+        // Collect all form data properly, including radio buttons
+        var formDataObj = {};
+        $form.find('input, select, textarea').each(function() {
+            var $input = $(this);
+            var name = $input.attr('name');
+            var type = $input.attr('type');
+            
+            if (name) {
+                if (type === 'radio' || type === 'checkbox') {
+                    if ($input.is(':checked')) {
+                        formDataObj[name] = $input.val();
+                    }
+                } else {
+                    var value = $input.val();
+                    // Always include oppervlakte field, regardless of value
+                    if (name === 'oppervlakte') {
+                        formDataObj[name] = value;
+                        console.log('Oppervlakte field found:', value, 'Type:', typeof value);
+                    } else if (value) {
+                        formDataObj[name] = value;
+                    }
+                }
+            }
+        });
+        
+        console.log('Form data being submitted:', formDataObj);
+        
+        // Prepare data for WordPress AJAX
+        var ajaxData = {
+            action: 'evs_vloerverwarming_offerte_submit',
+            nonce: (typeof evs_offerte_ajax_object !== 'undefined' ? evs_offerte_ajax_object.nonce : ''),
+            form_data: formDataObj
+        };
+        
+        console.log('AJAX data:', ajaxData);
 
         $.ajax({
-            url: (typeof evs_offerte_ajax_object !== 'undefined' ? evs_offerte_ajax_object.ajax_url : ''),
+            url: (typeof evs_offerte_ajax_object !== 'undefined' ? evs_offerte_ajax_object.ajax_url : admin_url('admin-ajax.php')),
             type: 'POST',
-            data: formData,
+            data: ajaxData,
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
@@ -184,8 +216,47 @@ jQuery(document).ready(function($) {
         if ($this.is(':checked')) {
             $this.closest('.evs-option-card').addClass('selected');
         }
+        
+        // Handle conditional fields
+        handleConditionalFields($this);
     });
+    
+    // Handle conditional field visibility
+    function handleConditionalFields($input) {
+        const name = $input.attr('name');
+        const value = $input.val();
+        
+        // Handle "verdieping" - show text input for "anders"
+        if (name === 'verdieping') {
+            const $andersInput = $('#anders-input');
+            if (value === 'anders') {
+                $andersInput.show().find('input').prop('required', true);
+            } else {
+                $andersInput.hide().find('input').prop('required', false).val('');
+            }
+        }
+        
+        // Handle "montagedatum" - show date input for "datum"
+        if (name === 'montagedatum') {
+            const $datumInput = $('#datum-input');
+            if (value === 'datum') {
+                $datumInput.show().find('input').prop('required', true);
+            } else {
+                $datumInput.hide().find('input').prop('required', false).val('');
+            }
+        }
+        
+        // Handle "vloer_dichtsmeren" - no additional info needed
+        if (name === 'vloer_dichtsmeren') {
+            // No additional handling needed for this field
+        }
+    }
 
     // --- Initial Setup ---
     showStep(currentStep);
+    
+    // Initialize conditional fields on page load
+    $('input[type="radio"]:checked').each(function() {
+        handleConditionalFields($(this));
+    });
 });

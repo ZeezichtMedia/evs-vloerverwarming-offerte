@@ -50,33 +50,33 @@ $offerData = $response->data[0];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Offer - EVS Vloerverwarmingen</title>
+    <title>Offerte Bewerken - EVS Vloerverwarmingen</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-5 mb-5">
-        <h1>Edit Offer #<?= htmlspecialchars(substr($offer_id, 0, 8)) ?></h1>
-        <p>Modify the details below and save to recalculate the prices and update the offer.</p>
+        <h1>Offerte Bewerken #<?= htmlspecialchars(substr($offer_id, 0, 8)) ?></h1>
+        <p>Pas de onderstaande gegevens aan en sla op om de prijzen opnieuw te berekenen en de offerte bij te werken.</p>
 
         <form method="POST">
             <div class="row">
                 <!-- Customer Details -->
                 <div class="col-md-6 mb-3">
-                    <label for="customer_name" class="form-label">Customer Name</label>
+                    <label for="customer_name" class="form-label">Naam Klant</label>
                     <input type="text" class="form-control" id="customer_name" name="customer_name" value="<?= htmlspecialchars($offerData['customer_name']) ?>" required>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="customer_email" class="form-label">Customer Email</label>
+                    <label for="customer_email" class="form-label">E-mail Klant</label>
                     <input type="email" class="form-control" id="customer_email" name="customer_email" value="<?= htmlspecialchars($offerData['customer_email']) ?>" required>
                 </div>
 
                 <!-- Project Details -->
                 <div class="col-md-4 mb-3">
-                    <label for="area" class="form-label">Area (m²)</label>
+                    <label for="area" class="form-label">Oppervlakte (m²)</label>
                     <input type="number" step="0.01" class="form-control" id="area" name="area" value="<?= htmlspecialchars($offerData['area']) ?>" required>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label for="floor_level" class="form-label">Floor Level</label>
+                    <label for="floor_level" class="form-label">Verdieping</label>
                     <select class="form-select" id="floor_level" name="floor_level">
                         <option value="begane_grond" <?= $offerData['floor_level'] == 'begane_grond' ? 'selected' : '' ?>>Begaande grond</option>
                         <option value="eerste_verdieping" <?= $offerData['floor_level'] == 'eerste_verdieping' ? 'selected' : '' ?>>Eerste verdieping</option>
@@ -85,7 +85,7 @@ $offerData = $response->data[0];
                     </select>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label for="floor_type" class="form-label">Floor Type</label>
+                    <label for="floor_type" class="form-label">Type Vloer</label>
                     <select class="form-select" id="floor_type" name="floor_type">
                         <option value="cement" <?= $offerData['floor_type'] == 'cement' ? 'selected' : '' ?>>Cement dekvloer</option>
                         <option value="tile" <?= $offerData['floor_type'] == 'tile' ? 'selected' : '' ?>>Tegelvloer</option>
@@ -96,7 +96,7 @@ $offerData = $response->data[0];
 
                 <!-- Technical Details -->
                 <div class="col-md-4 mb-3">
-                    <label for="heat_source" class="form-label">Heat Source</label>
+                    <label for="heat_source" class="form-label">Warmtebron</label>
                     <select class="form-select" id="heat_source" name="heat_source">
                         <option value="cv_ketel" <?= $offerData['heat_source'] == 'cv_ketel' ? 'selected' : '' ?>>CV ketel</option>
                         <option value="hybride_warmtepomp" <?= $offerData['heat_source'] == 'hybride_warmtepomp' ? 'selected' : '' ?>>Hybride warmtepomp</option>
@@ -106,17 +106,17 @@ $offerData = $response->data[0];
                     </select>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Connect Distributor?</label>
+                    <label class="form-label">Verdeler Aansluiten?</label>
                     <select class="form-select" name="distributor">
-                        <option value="yes" <?= $offerData['distributor'] == 'yes' ? 'selected' : '' ?>>Yes</option>
-                        <option value="no" <?= $offerData['distributor'] == 'no' ? 'selected' : '' ?>>No</option>
+                        <option value="yes" <?= $offerData['distributor'] == 'yes' ? 'selected' : '' ?>>Ja</option>
+                        <option value="no" <?= $offerData['distributor'] == 'no' ? 'selected' : '' ?>>Nee</option>
                     </select>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Seal Floor?</label>
+                    <label class="form-label">Vloer Dichtsmeren?</label>
                     <select class="form-select" name="sealing">
-                        <option value="yes" <?= $offerData['sealing'] == 'yes' ? 'selected' : '' ?>>Yes</option>
-                        <option value="no" <?= $offerData['sealing'] == 'no' ? 'selected' : '' ?>>No</option>
+                        <option value="yes" <?= $offerData['sealing'] == 'yes' ? 'selected' : '' ?>>Ja</option>
+                        <option value="no" <?= $offerData['sealing'] == 'no' ? 'selected' : '' ?>>Nee</option>
                     </select>
                 </div>
             </div>
@@ -124,10 +124,10 @@ $offerData = $response->data[0];
             <hr class="my-4">
 
             <div class="d-flex justify-content-between">
-                <a href="send-quote.php?id=<?= $offer_id ?>" class="btn btn-success">Send Final Quote</a>
+                <a href="send-quote.php?id=<?= $offer_id ?>" class="btn btn-success">Definitieve Offerte Versturen</a>
                 <div>
-                    <a href="dashboard.php" class="btn btn-secondary me-2">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="dashboard.php" class="btn btn-secondary me-2">Annuleren</a>
+                    <button type="submit" class="btn btn-primary">Wijzigingen Opslaan</button>
                 </div>
             </div>
         </form>
