@@ -1,12 +1,17 @@
 <?php
 /**
  * Plugin Name: EVS Vloerverwarming Offerte
- * Plugin URI: 
- * Description: Multi-step offerteformulier voor vloerverwarming installaties
- * Version: 3.9.2
- * Author: 
- * Author URI: 
+ * Plugin URI: https://evs-vloerverwarmingen.nl
+ * Description: Professioneel offerte- en factuursysteem voor vloerverwarming installaties met moderne architectuur
+ * Version: 4.0.0
+ * Author: EVS Vloerverwarmingen
+ * Author URI: https://evs-vloerverwarmingen.nl
  * Text Domain: evs-vloerverwarming
+ * Requires at least: 5.0
+ * Tested up to: 6.4
+ * Requires PHP: 7.4
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 // Voorkom direct toegang tot dit bestand
@@ -14,26 +19,80 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+// Plugin constants - with defensive checks for WordPress functions
+define('EVS_PLUGIN_VERSION', '4.0.0');
+
+// Only define these constants if WordPress functions are available
+if (function_exists('plugin_dir_path')) {
+    define('EVS_PLUGIN_PATH', plugin_dir_path(__FILE__));
+} else {
+    define('EVS_PLUGIN_PATH', dirname(__FILE__) . '/');
+}
+
+if (function_exists('plugin_dir_url')) {
+    define('EVS_PLUGIN_URL', plugin_dir_url(__FILE__));
+} else {
+    define('EVS_PLUGIN_URL', plugins_url('/', __FILE__));
+}
+
+if (function_exists('plugin_basename')) {
+    define('EVS_PLUGIN_BASENAME', plugin_basename(__FILE__));
+} else {
+    define('EVS_PLUGIN_BASENAME', basename(dirname(__FILE__)) . '/' . basename(__FILE__));
+}
+
 // Include the Composer autoloader safely
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
+} else {
+    // Fallback error if autoloader is missing
+    add_action('admin_notices', function() {
+        echo '<div class="notice notice-error"><p><strong>EVS Vloerverwarming:</strong> Composer autoloader niet gevonden. Voer "composer install" uit in de plugin directory.</p></div>';
+    });
+    return;
 }
 
-// Laad de Offer class
-if (file_exists(plugin_dir_path(__FILE__) . 'src/Models/Offer.php')) {
-    require_once plugin_dir_path(__FILE__) . 'src/Models/Offer.php';
-}
+// Import required classes
+use EVS\Container\Container;
+use EVS\Controllers\QuoteController;
+use EVS\Controllers\InvoiceController;
+use EVS\Controllers\AdminController;
+use EVS\Mail\QuoteMailer;
 
 final class EVS_Vloerverwarming_Offerte {
     
     /**
-     * Versie van de plugin voor cache busting
+     * Singleton instance
      */
     private static $instance = null;
-    private $version = '3.9.2';
     
     /**
-     * Of foutlogboek ingeschakeld is
+     * Plugin version
+     */
+    private $version = EVS_PLUGIN_VERSION;
+    
+    /**
+     * Dependency injection container
+     */
+    private Container $container;
+    
+    /**
+     * Quote controller
+     */
+    private QuoteController $quoteController;
+    
+    /**
+     * Invoice controller
+     */
+    private InvoiceController $invoiceController;
+    
+    /**
+     * Admin controller
+     */
+    private AdminController $adminController;
+    
+    /**
+     * Whether error logging is enabled
      */
     private $log_enabled = true;
     
@@ -79,15 +138,53 @@ final class EVS_Vloerverwarming_Offerte {
     }
     
     /**
-     * Constructor
+     * Constructor - Initialize the new architecture
      */
     private function __construct() {
+        // Initialize dependency injection container
+        $this->container = new Container();
+        $this->container->registerServices();
+        
+        // Initialize controllers
+        $mailer = new QuoteMailer();
+        
+        $this->quoteController = new QuoteController(
+            $this->container->getQuoteService(),
+            $this->container->getInvoiceService(),
+            $mailer
+        );
+        
+        $this->invoiceController = new InvoiceController(
+            $this->container->getInvoiceService(),
+            $mailer
+        );
+        
+        $this->adminController = new AdminController(
+            $this->container->getQuoteService(),
+            $this->container->getInvoiceService()
+        );
+        
+        // Register WordPress hooks
+        $this->registerHooks();
+    }
+    
+    /**
+     * Register all WordPress hooks
+     */
+    private function registerHooks(): void {
+        // Shortcode
         add_shortcode('evs_offerte_formulier', array($this, 'render_form_shortcode'));
-        add_action('wp_ajax_evs_vloerverwarming_offerte_submit', array($this, 'process_form'));
-        add_action('wp_ajax_nopriv_evs_vloerverwarming_offerte_submit', array($this, 'process_form'));
+        
+        // AJAX handlers - delegate to controller
+        add_action('wp_ajax_evs_vloerverwarming_offerte_submit', array($this->quoteController, 'handleFormSubmission'));
+        add_action('wp_ajax_nopriv_evs_vloerverwarming_offerte_submit', array($this->quoteController, 'handleFormSubmission'));
+        
+        // Error logging
         add_action('wp_ajax_log_evs_form_error', array($this, 'log_js_error'));
         add_action('wp_ajax_nopriv_log_evs_form_error', array($this, 'log_js_error'));
-                if (is_admin()) {
+        
+        // Admin hooks
+        if (is_admin()) {
             add_action('admin_menu', array($this, 'add_admin_menu'));
             add_action('admin_init', array($this, 'register_settings'));
             add_action('admin_init', array($this, 'handle_admin_actions'));
@@ -121,6 +218,25 @@ final class EVS_Vloerverwarming_Offerte {
                 'nonce' => wp_create_nonce('evs_form_nonce')
             )
         );
+        
+        // Add JavaScript error logging function
+        wp_add_inline_script('evs-form-script', '
+            function logJsError(message, file, context) {
+                if (typeof evs_offerte_ajax_object !== "undefined") {
+                    jQuery.ajax({
+                        url: evs_offerte_ajax_object.ajax_url,
+                        type: "POST",
+                        data: {
+                            action: "log_evs_form_error",
+                            nonce: evs_offerte_ajax_object.nonce,
+                            message: message,
+                            error: file || "unknown",
+                            url: context || window.location.href
+                        }
+                    });
+                }
+            }
+        ', 'before');
     }
     
     /**
@@ -134,70 +250,12 @@ final class EVS_Vloerverwarming_Offerte {
     }
     
     /**
-     * Verwerk het formulier via AJAX
+     * Legacy method - now delegates to controller
+     * @deprecated Use QuoteController::handleFormSubmission() instead
      */
     public function process_form() {
-        try {
-            check_ajax_referer('evs_form_nonce', 'nonce');
-            
-            $form_data = isset($_POST['form_data']) ? $_POST['form_data'] : array();
-        
-        // Debug logging for oppervlakte
-        if (isset($form_data['oppervlakte'])) {
-            error_log('EVS Debug - Raw oppervlakte value: ' . var_export($form_data['oppervlakte'], true));
-        } else {
-            error_log('EVS Debug - oppervlakte field not found in form_data');
-        }
-        
-        $form_data = $this->sanitize_form_data($form_data);
-        
-        // Debug logging after sanitization
-        if (isset($form_data['oppervlakte'])) {
-            error_log('EVS Debug - Sanitized oppervlakte value: ' . var_export($form_data['oppervlakte'], true));
-        }
-            
-            $validation_errors = $this->validate_form_data($form_data);
-            if (!empty($validation_errors)) {
-                wp_send_json_error(array(
-                    'message' => __('Er zijn fouten gevonden in het formulier.', 'evs-vloerverwarming'),
-                    'errors' => $validation_errors
-                ));
-            }
-            
-            $quote = $this->calculate_quote($form_data);
-            
-            $quote_id = $this->save_quote_to_database($form_data, $quote);
-            if ($quote_id) {
-                $form_data['id'] = $quote_id;
-                $quote['id'] = $quote_id;
-            }
-            
-            $customer_email_sent = $this->send_customer_email($form_data, $quote);
-            $admin_email_sent = $this->send_admin_email($form_data, $quote);
-            
-            if (!$customer_email_sent || !$admin_email_sent) {
-                $this->log_error('E-mail verzenden mislukt', array(
-                    'customer_email_sent' => $customer_email_sent,
-                    'admin_email_sent' => $admin_email_sent,
-                    'form_data' => $form_data
-                ));
-            }
-            
-            wp_send_json_success(array(
-                'message' => __('Uw offerte is succesvol verzonden. U ontvangt binnen 8 uur een prijsindicatie.', 'evs-vloerverwarming'),
-                'quote' => $quote,
-                'quote_id' => $quote_id
-            ));
-        } catch (Exception $e) {
-            $this->log_error(__('Fout bij verwerken formulier', 'evs-vloerverwarming'), array(
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ));
-            
-            wp_send_json_error(array(
-                'message' => __('Er is een fout opgetreden bij het verwerken van uw aanvraag. Probeer het later opnieuw of neem contact met ons op.', 'evs-vloerverwarming')
-            ));
-        }
+        // Delegate to the new controller
+        $this->quoteController->handleFormSubmission();
     }
     
     /**
@@ -767,65 +825,19 @@ final class EVS_Vloerverwarming_Offerte {
     }
 
     /**
-     * Verwerkt admin-acties zoals het verzenden van offertes en aanmaken van facturen.
+     * Modernized admin action handler - delegates to appropriate controllers
      */
     public function handle_admin_actions() {
-        // Alleen doorgaan als er een actie en offerte ID is
+        // Handle quote actions
         if (isset($_GET['action']) && isset($_GET['offer_id'])) {
-            $action = sanitize_key($_GET['action']);
-            $offer_id = intval($_GET['offer_id']);
-
-            // Handle edit and delete actions without nonce for now (they redirect to safe pages)
-            if ($action === 'edit') {
-                // Redirect to edit page
-                wp_redirect(admin_url('admin.php?page=evs-edit-offer&offer_id=' . $offer_id));
-                exit;
-            } elseif ($action === 'delete') {
-                // Handle delete with confirmation
-                $this->handle_delete_offer($offer_id);
-                return;
-            }
-
-            // Nonce-naam is afhankelijk van de actie (voor send_quote en create_invoice)
-            $nonce_name = '';
-            $nonce_action = '';
-            if ($action === 'send_quote') {
-                $nonce_name = 'evs_send_quote_nonce';
-                $nonce_action = 'evs_send_quote_' . $offer_id;
-            } elseif ($action === 'create_invoice') {
-                $nonce_name = 'evs_create_invoice_nonce';
-                $nonce_action = 'evs_create_invoice_' . $offer_id;
-            }
-
-            // Verifieer de nonce voor de veiligheid (alleen voor send_quote en create_invoice)
-            if (!empty($nonce_name) && (!isset($_GET[$nonce_name]) || !wp_verify_nonce($_GET[$nonce_name], $nonce_action))) {
-                // Nonce is niet geldig, stop de uitvoering
-                wp_die(__('Security check failed', 'evs-vloerverwarming'));
-            }
-
-            // Laad de PDF generator alleen als we een actie uitvoeren die het nodig heeft.
-            if (in_array($action, ['send_quote'])) {
-                if (file_exists(plugin_dir_path(__FILE__) . 'admin/class-evs-pdf-generator.php')) {
-                    require_once plugin_dir_path(__FILE__) . 'admin/class-evs-pdf-generator.php';
-                }
-            }
-
-            if ($action === 'send_quote') {
-                // Check if PDF generator class is available
-                if (class_exists('EVS_PDF_Generator')) {
-                    $this->handle_send_quote($offer_id);
-                } else {
-                    add_action('admin_notices', function() {
-                        echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('PDF generator is niet beschikbaar. Controleer of alle plugin bestanden correct zijn geïnstalleerd.', 'evs-vloerverwarming') . '</p></div>';
-                    });
-                }
-            } elseif ($action === 'create_invoice') {
-                $this->handle_create_invoice($offer_id);
-            }
-
-            // Redirect om te voorkomen dat de actie opnieuw wordt uitgevoerd bij het vernieuwen
-            wp_redirect(admin_url('admin.php?page=evs-offertes'));
-            exit;
+            $this->quoteController->handleAdminAction();
+            return;
+        }
+        
+        // Handle invoice actions
+        if (isset($_GET['action']) && isset($_GET['invoice_id'])) {
+            $this->invoiceController->handleAdminAction();
+            return;
         }
     }
 
@@ -1076,28 +1088,18 @@ final class EVS_Vloerverwarming_Offerte {
             $this->log_error(__('PDF generator niet beschikbaar voor offerte verzending.', 'evs-vloerverwarming'), ['offer_id' => $offer_id]);
         }
 
-        // Bereid data voor voor de e-mail template
-        $name_parts = explode(' ', $offer['customer_name'], 2);
-        $form_data = [
-            'email' => $offer['customer_email'],
-            'voornaam' => $name_parts[0],
-            'achternaam' => $name_parts[1] ?? '',
-            'soort_vloerverwarming' => 'infrezen', // Aanname, kan uit offerte gehaald worden indien opgeslagen
-            'type_woning' => $offer['floor_level'],
-            'type_vloer' => $offer['floor_type'],
-            'warmtebron' => $offer['heat_source'],
-            'vloer_dichtsmeren' => $offer['sealing'],
-        ];
-
-        $quote = [
-            'area_m2' => $offer['area'],
-            'drilling_price' => $offer['drilling_price'],
-            'sealing_price' => $offer['sealing_price'],
-            'total_price' => floatval($offer['drilling_price']) + floatval($offer['sealing_price']),
-        ];
-
-        // Verzend de e-mail via de centrale functie
-        if ($this->send_customer_email($form_data, $quote, $attachments)) {
+        // Create Quote object from database data and use QuoteMailer directly
+        require_once plugin_dir_path(__FILE__) . 'src/Models/Quote.php';
+        require_once plugin_dir_path(__FILE__) . 'src/Mail/QuoteMailer.php';
+        
+        // Convert database array to Quote object
+        $quote = \EVS\Models\Quote::fromArray($offer);
+        
+        // Create QuoteMailer instance
+        $mailer = new \EVS\Mail\QuoteMailer();
+        
+        // Send via QuoteMailer (same logic as automatic confirmation but with prices)
+        if ($mailer->sendQuoteToCustomer($quote)) {
             $wpdb->update($quotes_table, ['status' => 'sent'], ['id' => $offer_id]);
             add_action('admin_notices', function() {
                 echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Offerte succesvol verzonden.', 'evs-vloerverwarming') . '</p></div>';
@@ -1715,7 +1717,12 @@ final class EVS_Vloerverwarming_Offerte {
 function evs_vloerverwarming_offerte_init() {
     return EVS_Vloerverwarming_Offerte::instance();
 }
-add_action('plugins_loaded', 'evs_vloerverwarming_offerte_init');
+// Only register hooks if WordPress functions are available
+if (function_exists('add_action')) {
+    add_action('plugins_loaded', 'evs_vloerverwarming_offerte_init');
+}
 
 // Registreer de activatie hook om de database tabel aan te maken
-register_activation_hook(__FILE__, array('EVS_Vloerverwarming_Offerte', 'on_activation'));
+if (function_exists('register_activation_hook')) {
+    register_activation_hook(__FILE__, array('EVS_Vloerverwarming_Offerte', 'on_activation'));
+}

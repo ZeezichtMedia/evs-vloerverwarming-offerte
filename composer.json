@@ -2,12 +2,35 @@
     "name": "evs/vloerverwarmingen",
     "description": "EVS Vloerverwarmingen Offerte WordPress Plugin",
     "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "EVS Vloerverwarmingen",
+            "email": "info@evs-vloerverwarmingen.nl"
+        }
+    ],
     "require": {
         "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
             "EVS\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EVS\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-html coverage"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
     }
 }

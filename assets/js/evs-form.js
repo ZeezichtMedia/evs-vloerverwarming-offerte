@@ -189,7 +189,27 @@ jQuery(document).ready(function($) {
                     $('.evs-header').after(response.data.message); 
                 } else {
                     // On failure, show specific error messages returned from the server
-                    $formMessages.html(response.data.message).addClass('error').show();
+                    console.log('EVS Debug - Validation errors:', response.data.errors);
+                    console.log('EVS Debug - Form data sent:', response.data.debug_data);
+                    
+                    var errorHtml = response.data.message;
+                    if (response.data.errors && typeof response.data.errors === 'object') {
+                        errorHtml += '<ul>';
+                        for (var field in response.data.errors) {
+                            if (response.data.errors[field]) {
+                                if (Array.isArray(response.data.errors[field])) {
+                                    response.data.errors[field].forEach(function(error) {
+                                        errorHtml += '<li>' + error + '</li>';
+                                    });
+                                } else {
+                                    errorHtml += '<li>' + response.data.errors[field] + '</li>';
+                                }
+                            }
+                        }
+                        errorHtml += '</ul>';
+                    }
+                    
+                    $formMessages.html(errorHtml).addClass('error').show();
                     $submitButton.prop('disabled', false).text('Offerte aanvragen');
                 }
             },
