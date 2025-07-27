@@ -10,7 +10,7 @@
 <?php echo esc_html($labels['due_date']); ?> <?php echo esc_html($invoice_data['due_date_formatted']); ?>
 
 <?php echo esc_html($labels['customer_details']); ?>
-<?php echo esc_html($labels['name']); ?> <?php echo esc_html($invoice_data['customer_name']); ?>
+<?php echo esc_html($labels['name']); ?> <?php echo esc_html($invoice_data['naam']); ?>
 <?php if (!empty($invoice_data['customer_address'])): ?>
 <?php echo esc_html($labels['address']); ?> <?php echo esc_html($invoice_data['customer_address']); ?>
 <?php endif; ?>

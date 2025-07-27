@@ -11,10 +11,12 @@ if (!defined('ABSPATH')) {
 }
 
 class EVS_Database_Manager {
-    
     private $wpdb;
     private $table_name;
     private $invoices_table_name;
+    
+    // VAT rate constant
+    const VAT_RATE = 1.21;
     
     /**
      * Constructor
@@ -246,7 +248,7 @@ class EVS_Database_Manager {
 
         // Populate all required fields
         $total_amount = (float) $quote['total_price'];
-        $subtotal = $total_amount / 1.21; // Assuming 21% VAT
+        $subtotal = $total_amount / self::VAT_RATE; // Using VAT rate constant
         $vat_amount = $total_amount - $subtotal;
 
         $invoice_data = [
@@ -427,7 +429,7 @@ class EVS_Database_Manager {
              WHERE invoice_number LIKE %s 
              ORDER BY invoice_number DESC 
              LIMIT 1",
-            $prefix . '%'
+            $this->wpdb->esc_like($prefix) . '%'
         );
         
         $last_number = $this->wpdb->get_var($query);
@@ -440,5 +442,76 @@ class EVS_Database_Manager {
         }
         
         return $prefix . str_pad($next_number, 4, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * Get all invoices with optional filtering
+     * 
+     * @param array $args Query arguments
+     * @return array Invoices data
+     */
+    public function get_invoices($args = array()) {
+        $defaults = array(
+            'status' => '',
+            'limit' => 50,
+            'offset' => 0,
+            'orderby' => 'invoice_date',
+            'order' => 'DESC'
+        );
+        
+        $args = wp_parse_args($args, $defaults);
+        
+        $where_clauses = array();
+        $where_values = array();
+        
+        if (!empty($args['status'])) {
+            $where_clauses[] = 'status = %s';
+            $where_values[] = $args['status'];
+        }
+        
+        $where_sql = !empty($where_clauses) ? 'WHERE ' . implode(' AND ', $where_clauses) : '';
+        
+        $allowed_orderby = array('invoice_date', 'due_date', 'total_amount', 'created_at');
+        $orderby = in_array($args['orderby'], $allowed_orderby) ? $args['orderby'] : 'invoice_date';
+        $order = $args['order'] === 'ASC' ? 'ASC' : 'DESC';
+        $order_sql = sprintf('ORDER BY %s %s', $orderby, $order);
+        
+        $limit_sql = sprintf('LIMIT %d OFFSET %d', (int)$args['limit'], (int)$args['offset']);
+        
+        $query = $this->wpdb->prepare(
+            "SELECT * FROM {$this->invoices_table_name} {$where_sql} {$order_sql} {$limit_sql}",
+            $where_values
+        );
+
+        return $this->wpdb->get_results($query, ARRAY_A);
+    }
+    
+    /**
+     * Update invoice status
+     * 
+     * @param int $invoice_id Invoice ID
+     * @param string $status New status
+     * @return bool Success status
+     */
+    public function update_invoice_status($invoice_id, $status) {
+        $result = $this->wpdb->update(
+            $this->invoices_table_name,
+            array('status' => $status),
+            array('id' => $invoice_id),
+            array('%s'),
+            array('%d')
+        );
+        
+        return $result !== false;
+    }
+    
+    /**
+     * Get last invoice for generating invoice numbers
+     * 
+     * @return array|null Last invoice data or null if not found
+     */
+    public function get_last_invoice() {
+        $query = "SELECT * FROM {$this->invoices_table_name} ORDER BY created_at DESC LIMIT 1";
+        return $this->wpdb->get_row($query, ARRAY_A);
     }
 }

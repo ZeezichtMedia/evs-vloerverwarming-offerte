@@ -33,7 +33,7 @@ $this->get_email_header($email_heading);
 <?php
 // Calculate missing values at the beginning of the price table.
 $total_price = (float) $quote_data['total_price'];
-$sub_total   = $total_price / 1.21; // Assuming 21% VAT
+$sub_total   = $total_price / EVS_Admin_Manager::VAT_RATE; // Using VAT rate constant
 $btw_amount  = $total_price - $sub_total;
 ?>
 <h3>Prijsspecificatie</h3>

@@ -3,7 +3,7 @@
  * Plugin Name: EVS Vloerverwarming Offerte - Improved
  * Plugin URI: https://evs-vloerverwarmingen.nl
  * Description: Professioneel offerte- en factuursysteem voor vloerverwarming installaties met verbeterde architectuur
- * Version: 4.8.0
+ * Version: 4.8.9
  * Author: Zee-Zicht Media
  * Author URI: https://zee-zicht.nl
  * Text Domain: evs-vloerverwarming
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('EVS_PLUGIN_VERSION', '4.8.1');
+define('EVS_PLUGIN_VERSION', '4.8.9');
 define('EVS_IMPROVED_PATH', plugin_dir_path(__FILE__));
 define('EVS_IMPROVED_URL', plugin_dir_url(__FILE__));
 
@@ -121,46 +121,11 @@ final class EVS_Vloerverwarming_Offerte_Improved {
             'show_title' => 'true'
         ), $atts);
         
-        // Enqueue scripts and styles
-        $this->enqueue_scripts();
-        
         // Generate form HTML
         return $this->form_handler->render_form($atts);
     }
     
-    /**
-     * Enqueue scripts and styles
-     */
-    public function enqueue_scripts() {
-        wp_enqueue_script('jquery');
-        
-        wp_enqueue_style(
-            'evs-offerte-style',
-            EVS_IMPROVED_URL . 'assets/css/evs-offerte-style.css',
-            array(),
-            $this->version
-        );
-        
-        wp_enqueue_script(
-            'evs-offerte-script',
-            EVS_IMPROVED_URL . 'assets/js/evs-offerte-script.js',
-            array('jquery'),
-            $this->version,
-            true
-        );
-        
-        // Localize script for AJAX
-        wp_localize_script('evs-offerte-script', 'evs_ajax', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('evs_form_nonce'),
-            'messages' => array(
-                'loading' => 'Bezig met verzenden...',
-                'success' => 'Uw aanvraag is succesvol verzonden!',
-                'error' => 'Er is een fout opgetreden. Probeer het opnieuw.',
-                'validation_error' => 'Controleer de ingevoerde gegevens.'
-            )
-        ));
-    }
+
     
     /**
      * Calculate admin price via AJAX

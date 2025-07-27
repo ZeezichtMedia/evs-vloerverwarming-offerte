@@ -49,7 +49,7 @@
         <div class="invoice-details">
             <h3><?php echo esc_html($labels['customer_details']); ?></h3>
             <p>
-                <strong><?php echo esc_html($labels['name']); ?></strong> <?php echo esc_html($invoice_data['customer_name']); ?><br>
+                <strong><?php echo esc_html($labels['name']); ?></strong> <?php echo esc_html($invoice_data['naam']); ?><br>
                 <?php if (!empty($invoice_data['customer_address'])): ?>
                     <strong><?php echo esc_html($labels['address']); ?></strong> <?php echo esc_html($invoice_data['customer_address']); ?><br>
                 <?php endif; ?>

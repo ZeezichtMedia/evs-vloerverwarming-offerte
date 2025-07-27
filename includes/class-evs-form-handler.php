@@ -44,23 +44,23 @@ class EVS_Form_Handler {
      */
     public function enqueue_scripts() {
         global $post;
-        if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'evs_offerte_form')) {
+        if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'evs_offerte_formulier')) {
             wp_enqueue_style(
-                'evs-offerte-style',
-                EVS_IMPROVED_URL . 'assets/css/evs-offerte-style.css',
+                'evs-form-style',
+                EVS_IMPROVED_URL . 'assets/css/evs-form.css',
                 array(),
                 EVS_PLUGIN_VERSION
             );
 
             wp_enqueue_script(
-                'evs-offerte-script',
-                EVS_IMPROVED_URL . 'assets/js/evs-offerte-script.js',
+                'evs-form-script',
+                EVS_IMPROVED_URL . 'assets/js/evs-form.js',
                 array('jquery'),
                 EVS_PLUGIN_VERSION,
                 true
             );
 
-            wp_localize_script('evs-offerte-script', 'evs_ajax_obj', array(
+            wp_localize_script('evs-form-script', 'evs_offerte_ajax_object', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('evs_form_nonce')
             ));
@@ -71,15 +71,18 @@ class EVS_Form_Handler {
      * Process form submission
      */
     public function process_form() {
-        // Verify nonce - check both possible nonce field names for compatibility
-        $nonce = $_POST['evs_nonce'] ?? $_POST['nonce'] ?? '';
+        // Verify nonce
+        $nonce = $_POST['nonce'] ?? '';
         if (!wp_verify_nonce($nonce, 'evs_form_nonce')) {
             wp_send_json_error(array('message' => 'Security check failed'));
             return;
         }
         
+        // Get form data from nested structure or direct POST
+        $raw_form_data = $_POST['form_data'] ?? $_POST;
+        
         // Sanitize form data
-        $form_data = $this->sanitize_form_data($_POST);
+        $form_data = $this->sanitize_form_data($raw_form_data);
         
         // Validate form data
         $validation_errors = $this->validate_form_data($form_data);
@@ -147,10 +150,13 @@ class EVS_Form_Handler {
         $sanitized = array();
         
         // Text fields
-        $text_fields = array('naam', 'email', 'telefoon', 'adres', 'postcode', 'plaats', 'opmerkingen', 'verdieping_anders');
+        $text_fields = array('voornaam', 'achternaam', 'email', 'telefoon', 'adres', 'huisnummer', 'postcode', 'plaats', 'land', 'toelichting', 'verdieping_anders');
         foreach ($text_fields as $field) {
             $sanitized[$field] = sanitize_text_field($data[$field] ?? '');
         }
+        
+        // Combine voornaam and achternaam into naam for backward compatibility
+        $sanitized['naam'] = trim(($sanitized['voornaam'] ?? '') . ' ' . ($sanitized['achternaam'] ?? ''));
         
         // Email
         $sanitized['email'] = sanitize_email($data['email'] ?? '');
@@ -161,59 +167,81 @@ class EVS_Form_Handler {
             $sanitized[$field] = sanitize_key($data[$field] ?? '');
         }
         
-        // Numeric fields
-        $sanitized['area_m2'] = (float) ($data['area_m2'] ?? 0);
+        // Numeric fields - support both field names for compatibility
+        $sanitized['area_m2'] = (float) ($data['area_m2'] ?? $data['oppervlakte'] ?? 0);
         
         // Date field
         $sanitized['montagedatum'] = sanitize_text_field($data['montagedatum'] ?? '');
         
-        // Checkbox
-        $sanitized['privacy_akkoord'] = isset($data['privacy_akkoord']) ? 1 : 0;
+        // Checkbox - handle 'on', true, 1, or any truthy value
+        $sanitized['privacy_akkoord'] = (!empty($data['privacy_akkoord']) && ($data['privacy_akkoord'] === 'on' || $data['privacy_akkoord'])) ? 1 : 0;
         
         return $sanitized;
     }
     
     /**
      * Validate form data
+     * 
+     * @param array $data Form data to validate
+     * @return array Associative array with field names as keys and error messages as values
      */
     private function validate_form_data($data) {
         $errors = array();
         
-        // Required fields
-        if (empty($data['naam'])) {
-            $errors[] = 'Naam is verplicht';
+        // Required fields with field-specific error messages
+        // Combine voornaam and achternaam into naam for backward compatibility
+        $naam = trim(($data['voornaam'] ?? '') . ' ' . ($data['achternaam'] ?? ''));
+        if (empty($naam)) {
+            $errors['naam'] = 'Voor- en achternaam zijn verplicht';
         }
         
-        if (empty($data['email']) || !is_email($data['email'])) {
-            $errors[] = 'Geldig e-mailadres is verplicht';
+        if (empty($data['email'])) {
+            $errors['email'] = 'E-mailadres is verplicht';
+        } elseif (!is_email($data['email'])) {
+            $errors['email'] = 'Geldig e-mailadres is verplicht';
         }
         
         if (empty($data['verdieping'])) {
-            $errors[] = 'Verdieping selectie is verplicht';
+            $errors['verdieping'] = 'Verdieping selectie is verplicht';
         }
         
         if (empty($data['type_vloer'])) {
-            $errors[] = 'Vloertype selectie is verplicht';
+            $errors['type_vloer'] = 'Vloertype selectie is verplicht';
+        }
+        
+        if (empty($data['area_m2']) || $data['area_m2'] <= 0) {
+            $errors['area_m2'] = 'Oppervlakte moet groter zijn dan 0 m²';
         }
         
         if (empty($data['warmtebron'])) {
-            $errors[] = 'Warmtebron selectie is verplicht';
+            $errors['warmtebron'] = 'Warmtebron selectie is verplicht';
         }
         
         if (empty($data['verdeler_aansluiten'])) {
-            $errors[] = 'Verdeler aansluiten selectie is verplicht';
+            $errors['verdeler_aansluiten'] = 'Verdeler aansluiten selectie is verplicht';
         }
         
         if (empty($data['vloer_dichtsmeren'])) {
-            $errors[] = 'Vloer dichtsmeren selectie is verplicht';
+            $errors['vloer_dichtsmeren'] = 'Vloer dichtsmeren selectie is verplicht';
         }
         
         if (empty($data['montagedatum_type'])) {
-            $errors[] = 'Montagedatum type selectie is verplicht';
+            $errors['montagedatum_type'] = 'Montagedatum type selectie is verplicht';
         }
         
-        if (!$data['privacy_akkoord']) {
-            $errors[] = 'Akkoord met privacyverklaring is verplicht';
+        // If specific date is chosen, validate the date field
+        if ($data['montagedatum_type'] === 'datum' && empty($data['montagedatum'])) {
+            $errors['montagedatum'] = 'Gewenste datum is verplicht';
+        }
+        
+        // If "anders" is selected for verdieping, validate the text field
+        if ($data['verdieping'] === 'anders' && empty($data['verdieping_anders'])) {
+            $errors['verdieping_anders'] = 'Specificatie van verdieping is verplicht';
+        }
+        
+        // Privacy checkbox can be 'on', true, or 1 when checked
+        if (empty($data['privacy_akkoord']) || ($data['privacy_akkoord'] !== 'on' && !$data['privacy_akkoord'])) {
+            $errors['privacy_akkoord'] = 'Akkoord met privacyverklaring is verplicht';
         }
         
         return $errors;

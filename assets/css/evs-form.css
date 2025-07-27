@@ -1,23 +1,46 @@
 /* EVS Vloerverwarming Offerte Formulier Stijlen */
 
+/* Universal box-sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* CSS Custom Properties (Variabelen) */
+:root {
+    --evs-primary-color: #dc3545;
+    --evs-light-gray: #eee;
+    --evs-border-color: #e9ecef;
+    --evs-background-light: #f9f9f9;
+    --evs-background-lighter: #f8f9fa;
+    --evs-text-dark: #222;
+    --evs-text-medium: #666;
+    --evs-text-light: #999;
+    --evs-font-family: 'Helvetica Neue', Arial, sans-serif;
+    --evs-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --evs-border-radius: 8px;
+    --evs-success-color: #28a745;
+    --evs-warning-color: #ffc107;
+    --evs-danger-color: #dc3545;
+}
+
 /* Algemene container */
 .evs-offerte-formulier-container {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: var(--evs-font-family);
     max-width: 1000px;
     margin: 40px auto;
-    background-color: #f9f9f9;
-    border-radius: 8px;
+    background-color: var(--evs-background-light);
+    border-radius: var(--evs-border-radius);
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--evs-shadow);
 }
 
 .evs-header {
     padding: 25px 30px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--evs-light-gray);
 }
 
 .evs-logo {
-    color: #dc3545;
+    color: var(--evs-primary-color);
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 10px;
@@ -29,7 +52,7 @@
     display: inline-block;
     width: 20px;
     height: 20px;
-    background-color: #dc3545;
+    background-color: var(--evs-primary-color);
     border-radius: 50%;
     margin-right: 8px;
 }
@@ -37,221 +60,193 @@
 .evs-header h1 {
     font-size: 28px;
     margin: 0 0 5px 0;
-    color: #222;
+    color: var(--evs-text-dark);
 }
 
 .evs-subtitle {
     font-size: 16px;
-    color: #666;
+    color: var(--evs-text-medium);
     margin: 0;
 }
 
 /* Multi-step form layout */
 .evs-multi-step-form {
     display: flex;
-    min-height: 550px;
+    min-height: 500px;
 }
 
+/* Progress sidebar */
 .evs-progress-sidebar {
     width: 280px;
     background-color: #fff;
     border-right: 1px solid #eee;
-    padding: 20px;
+    padding: 30px 0;
 }
 
-.evs-form-steps-container {
-    flex: 1;
-    position: relative;
-    padding: 30px;
-}
-
-/* Progress indicator */
-.evs-progress-item {
-    margin-bottom: 15px;
-    padding: 12px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    transition: all 0.3s ease;
-    position: relative;
-    border: 1px solid transparent;
-}
-
-.evs-progress-item:hover {
-    background-color: rgba(220, 53, 69, 0.05);
-}
-
-.evs-progress-item.active {
-    background-color: rgba(220, 53, 69, 0.1);
-    font-weight: 600;
-    color: #c82333;
-    border-left: 4px solid #dc3545;
-}
-
-.evs-progress-item.completed {
-    color: #dc3545;
-}
-
-.evs-progress-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #e9ecef;
-    margin-right: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #495057;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}
-
-.evs-progress-item.active .evs-progress-icon {
-    background-color: #dc3545;
-    color: white;
-}
-
-.evs-progress-item.completed .evs-progress-icon {
-    background-color: rgba(220, 53, 69, 0.2);
-    color: #dc3545;
-}
-
-.evs-progress-item.completed .evs-progress-icon:after {
-    content: '✓';
-    font-size: 16px;
-}
-
-.evs-progress-text {
-    font-size: 15px;
-}
-
-/* Form steps */
-.evs-form-step {
-    display: none;
-    animation: fadeIn 0.5s;
-}
-
-.evs-form-step.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.evs-step-content {
-    margin-bottom: 30px;
-}
-
-.evs-step-content h2 {
-    font-size: 24px;
-    margin: 0 0 25px 0;
-    color: #333;
-}
-
-/* Progress bar for mobile */
 .evs-progress-bar-container {
-    display: none; /* Hidden on desktop */
-    width: 100%;
-    background-color: #e9ecef;
-    height: 8px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    margin: 0 30px 30px 30px;
+    height: 4px;
+    background-color: #f0f0f0;
+    border-radius: 2px;
     overflow: hidden;
 }
 
 .evs-progress-bar {
     height: 100%;
     background-color: #dc3545;
-    transition: width 0.4s ease;
+    transition: width 0.3s ease;
 }
 
-/* General Form Styling */
+.evs-progress-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 30px;
+    color: var(--evs-text-light);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.evs-progress-item.active {
+    color: var(--evs-primary-color);
+    background-color: #fff5f5;
+    border-right: 3px solid var(--evs-primary-color);
+}
+
+.evs-progress-item.completed {
+    color: var(--evs-success-color);
+}
+
+.evs-progress-icon {
+    margin-right: 12px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.evs-progress-text {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Form steps container */
+.evs-form-steps-container {
+    flex: 1;
+    padding: 40px;
+    background-color: #fff;
+}
+
+.evs-form-step {
+    display: none;
+}
+
+.evs-form-step.active {
+    display: block;
+}
+
+.evs-step-content h2 {
+    font-size: 24px;
+    color: var(--evs-text-dark);
+    margin: 0 0 25px 0;
+    font-weight: 600;
+}
+
+/* Options container */
 .evs-options-container {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 15px;
+    margin-bottom: 30px;
 }
 
 .evs-option-card {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 18px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    display: block;
     background-color: #fff;
-    display: flex;
-    align-items: center;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
 .evs-option-card:hover {
-    border-color: #c82333;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-color: #dc3545;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.1);
+}
+
+.evs-option-card.selected {
+    border-color: #dc3545;
+    background-color: #fff5f5;
 }
 
 .evs-option-card input[type="radio"] {
     position: absolute;
     opacity: 0;
-    width: 1px;
-    height: 1px;
-}
-
-.evs-option-card.selected {
-    border-color: #dc3545;
-    background-color: rgba(220, 53, 69, 0.05);
-    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+    width: 0;
+    height: 0;
 }
 
 .evs-option-content {
     display: flex;
     align-items: center;
-    width: 100%;
 }
 
 .evs-option-check {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
     border-radius: 50%;
-    border: 2px solid #adb5bd;
-    margin-right: 15px;
+    margin-right: 12px;
     position: relative;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .evs-option-card.selected .evs-option-check {
-    border-color: #dc3545;
-    background-color: #dc3545;
+    border-color: var(--evs-primary-color);
+    background-color: var(--evs-primary-color);
 }
 
-.evs-option-card.selected .evs-option-check:after {
-    content: "";
+.evs-option-card.selected .evs-option-check::after {
+    content: '';
     position: absolute;
-    display: block;
-    /* Adjust positioning for perfect centering */
-    left: 50%;
     top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 6px;
-    height: 12px; /* Adjusted height for better proportion */
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    transform: translate(-50%, -60%) rotate(45deg); /* Fine-tuned transform */
+    height: 6px;
+    background-color: #fff;
+    border-radius: 50%;
 }
 
 .evs-option-text {
     font-size: 16px;
-    color: #343a40;
     font-weight: 500;
+    color: #333;
 }
 
 .evs-option-card.selected .evs-option-text {
-    color: #c82333;
+    color: var(--evs-primary-color);
 }
 
-/* Input fields */
+/* Floor sections */
+.evs-floor-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: var(--evs-background-lighter);
+    border-radius: var(--evs-border-radius);
+    border-left: 4px solid var(--evs-primary-color);
+}
+
+.evs-floor-section h3 {
+    margin: 0 0 15px 0;
+    color: var(--evs-primary-color);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Form groups */
 .evs-form-group {
     margin-bottom: 20px;
 }
@@ -260,276 +255,163 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    font-size: 15px;
-    color: #495057;
+    color: #333;
 }
 
-.evs-input-wrapper {
-    display: flex;
-    align-items: center;
-    max-width: 300px;
-}
-
-.evs-form-input, .evs-form-group input, .evs-form-group select, .evs-form-group textarea {
+.evs-form-group input,
+.evs-form-group select,
+.evs-form-group textarea {
     width: 100%;
-    padding: 18px 14px; /* Adjusted padding to match option cards */
-    border: 1px solid #ced4da;
-    border-radius: 6px; /* Match option cards */
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
     font-size: 16px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box; /* Ensure padding is included in height */
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
 }
 
-.evs-form-input:focus, .evs-form-group input:focus, .evs-form-group select:focus, .evs-form-group textarea:focus {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+.evs-form-group input:focus,
+.evs-form-group select:focus,
+.evs-form-group textarea:focus {
     outline: none;
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
 }
 
-.evs-input-suffix {
-    padding: 0 12px;
-    font-weight: 500;
-    color: #495057;
+.evs-form-group textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
-/* Contact form layout */
+/* Form rows */
 .evs-form-row {
     display: flex;
-    flex-wrap: wrap;
     gap: 20px;
+    margin-bottom: 20px;
 }
 
-.evs-form-group {
-    flex: 1 1 calc(50% - 10px);
-    min-width: 200px;
-}
-
-.evs-form-group.evs-form-group-short {
-    flex: 0 1 120px;
-}
-
-/* Conditional Questions */
-.evs-conditional-question {
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-    display: none; /* Hidden by default */
-    flex-wrap: wrap;
-    gap: 15px 20px;
-    align-items: center;
-}
-
-.evs-conditional-question.visible {
-    display: flex;
-}
-
-.evs-conditional-question .evs-input-label {
-    flex: 1 1 250px;
-    margin: 0;
-    font-weight: 500;
-    font-size: 16px;
-}
-
-.evs-conditional-question .evs-options-container {
-    flex: 2 1 300px;
-    max-width: none;
-    display: flex;
-    gap: 15px;
-}
-
-.evs-conditional-question .evs-option-card {
+.evs-form-row .evs-form-group {
     flex: 1;
-    padding: 12px;
-    text-align: center;
-    justify-content: center;
+    margin-bottom: 0;
 }
 
-.evs-conditional-question .evs-option-check {
-    display: none; /* Hide radio circle in yes/no */
+/* Contact form */
+.evs-contact-form {
+    background-color: var(--evs-background-lighter);
+    padding: 25px;
+    border-radius: var(--evs-border-radius);
+    margin-bottom: 30px;
 }
 
-/* Checkbox Styling */
-.evs-checkbox-container {
-    display: flex;
-    align-items: center;
-    position: relative;
-    margin-top: 20px;
-    cursor: pointer;
-    font-size: 15px;
-}
-
-.evs-checkbox-container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.evs-checkmark {
-    height: 22px;
-    width: 22px;
-    background-color: #fff;
-    border: 1px solid #adb5bd;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    margin-right: 12px;
-}
-
-.evs-checkbox-container:hover .evs-checkmark {
-    border-color: #dc3545;
-}
-
-.evs-checkbox-container input:checked ~ .evs-checkmark {
-    background-color: #dc3545;
-    border-color: #dc3545;
-}
-
-.evs-checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 8px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    transform: rotate(45deg);
-}
-
-.evs-checkbox-container input:checked ~ .evs-checkmark:after {
-    display: block;
-}
-
-.evs-checkbox-text a {
-    color: #dc3545;
-    text-decoration: none;
-}
-.evs-checkbox-text a:hover {
-    text-decoration: underline;
-}
-
-/* Navigation buttons */
+/* Buttons */
 .evs-form-navigation {
     display: flex;
     justify-content: space-between;
-    padding-top: 20px;
-    margin-top: 20px;
-    border-top: 1px solid #eee;
+    align-items: center;
+    padding-top: 30px;
+    border-top: 1px solid var(--evs-light-gray);
 }
 
 .evs-prev-btn,
 .evs-next-btn,
 .evs-submit-btn {
-    padding: 12px 28px;
+    padding: 12px 30px;
+    border: none;
     border-radius: 6px;
-    font-weight: 500;
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
 .evs-prev-btn {
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
-    color: #343a40;
+    background-color: #6c757d;
+    color: #fff;
 }
 
 .evs-prev-btn:hover {
-    background-color: #e9ecef;
+    background-color: #5a6268;
 }
 
 .evs-next-btn,
 .evs-submit-btn {
-    background-color: #dc3545;
-    color: white;
+    background-color: var(--evs-primary-color);
+    color: #fff;
 }
 
 .evs-next-btn:hover,
 .evs-submit-btn:hover {
     background-color: #c82333;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+.evs-submit-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
 }
 
 /* Success message */
 .evs-success-message {
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    color: #155724;
 }
 
 .evs-success-icon {
-    width: 60px;
-    height: 60px;
-    background-color: #dc3545;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    margin: 0 auto 25px;
+    font-size: 48px;
+    color: #28a745;
+    margin-bottom: 20px;
 }
 
-/* Responsive styles */
-@media (max-width: 992px) {
-    .evs-multi-step-form {
-        flex-direction: column;
-    }
-    .evs-progress-sidebar {
-        display: none;
-    }
-    .evs-progress-bar-container {
-        display: block;
-    }
-    .evs-form-steps-container {
-        padding: 20px;
-    }
+/* Error messages */
+.evs-form-messages {
+    margin-top: 20px;
 }
 
-@media (max-width: 768px) {
-    .evs-form-row {
-        flex-direction: column;
-        gap: 0;
-    }
-    .evs-form-group {
-        margin-bottom: 15px;
-    }
-    .evs-step-content h2 {
-        font-size: 22px;
-    }
-    .evs-form-navigation {
-        flex-direction: column-reverse;
-        gap: 10px;
-    }
-    .evs-prev-btn, .evs-next-btn, .evs-submit-btn {
-        width: 100%;
-    }
-    .evs-conditional-question {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .evs-conditional-question .evs-options-container {
-        width: 100%;
-    }
+.evs-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
 }
 
-@media (max-width: 576px) {
-    .evs-offerte-formulier-container {
-        margin: 10px;
-    }
-    .evs-header h1 {
-        font-size: 22px;
-    }
-    .evs-subtitle {
-        font-size: 14px;
-    }
-    .evs-form-steps-container {
-        padding: 15px;
-    }
+.evs-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
 }
 
-/* Utility Classes */
+/* Conditional questions */
+.evs-conditional-question {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #17a2b8;
+    display: none;
+}
+
+.evs-conditional-question.visible {
+    display: block;
+}
+
+.evs-conditional-question h3 {
+    margin: 0 0 15px 0;
+    color: #17a2b8;
+    font-size: 18px;
+}
+
+/* Utility classes */
 .hidden {
     display: none !important;
 }
@@ -546,29 +428,104 @@
     border-width: 0;
 }
 
-/* Verbeterde toegankelijkheid */
-.evs-option-card:focus-within {
-    outline: 2px solid #dc3545;
-    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.3);
+/* Responsive design */
+@media (max-width: 768px) {
+    .evs-multi-step-form {
+        flex-direction: column;
+    }
+    
+    .evs-progress-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding: 20px 0;
+    }
+    
+    .evs-progress-item {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    .evs-form-steps-container {
+        padding: 20px;
+    }
+    
+    .evs-options-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .evs-form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .evs-header {
+        padding: 20px;
+    }
+    
+    .evs-header h1 {
+        font-size: 24px;
+    }
+    
+    .evs-subtitle {
+        font-size: 14px;
+    }
 }
 
-input:focus, 
-select:focus, 
-textarea:focus {
-    outline: 2px solid #dc3545;
-    border-color: #dc3545;
+@media (max-width: 576px) {
+    .evs-offerte-formulier-container {
+        margin: 10px;
+        border-radius: 0;
+    }
+    
+    .evs-form-steps-container {
+        padding: 15px;
+    }
+    
+    .evs-option-card {
+        padding: 15px;
+    }
+    
+    .evs-prev-btn,
+    .evs-next-btn,
+    .evs-submit-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
 }
 
-/* Verbeterde printbaarheid */
+/* Print styles */
 @media print {
     body {
         background-color: #fff;
     }
-    .evs-offerte-formulier-container, .evs-header, .evs-multi-step-form {
+    
+    .evs-offerte-formulier-container,
+    .evs-header,
+    .evs-multi-step-form {
         box-shadow: none;
         border: 1px solid #ccc;
     }
-    .evs-prev-btn, .evs-next-btn, .evs-submit-btn, .evs-progress-sidebar {
+    
+    .evs-prev-btn,
+    .evs-next-btn,
+    .evs-submit-btn,
+    .evs-progress-sidebar {
         display: none;
     }
+}
+
+/* Accessibility improvements */
+.evs-offerte-formulier-container .evs-option-card:focus-within {
+    outline: 2px solid var(--evs-primary-color);
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.3);
+}
+
+/* Specifieke focus stijlen voor formulier elementen */
+.evs-offerte-formulier-container input:focus,
+.evs-offerte-formulier-container select:focus,
+.evs-offerte-formulier-container textarea:focus {
+    outline: 2px solid var(--evs-primary-color);
+    border-color: var(--evs-primary-color);
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
 }
