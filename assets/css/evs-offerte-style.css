@@ -1,0 +1,483 @@
+/**
+ * EVS Offerte Form Styles
+ * Modern, responsive styling for the multi-step form
+ */
+
+.evs-offerte-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.evs-form-title {
+    text-align: center;
+    color: #E53E3E;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    font-weight: 300;
+}
+
+/* Multi-step form */
+.evs-multi-step-form {
+    position: relative;
+}
+
+.evs-step {
+    display: none;
+    padding: 30px 0;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.evs-step.active {
+    display: block;
+}
+
+.evs-step h3 {
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 1.5em;
+    font-weight: 500;
+    border-bottom: 2px solid #E53E3E;
+    padding-bottom: 10px;
+}
+
+/* Form groups */
+.evs-form-group {
+    margin-bottom: 25px;
+}
+
+.evs-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Radio groups */
+.evs-radio-group {
+    display: block;
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.evs-radio-group:hover {
+    border-color: #E53E3E;
+    background-color: #f8f9fa;
+}
+
+.evs-radio-group input[type="radio"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.evs-radio-group input[type="radio"]:checked + .evs-radio-label {
+    font-weight: 600;
+    color: #E53E3E;
+}
+
+/* Modern browsers - use :has selector */
+.evs-radio-group:has(input[type="radio"]:checked) {
+    border-color: #E53E3E;
+    background-color: #fef2f2;
+}
+
+/* Fallback for older browsers */
+.evs-radio-group.selected {
+    border-color: #E53E3E;
+    background-color: #fef2f2;
+}
+
+.evs-radio-label {
+    font-size: 1.1em;
+    margin: 0;
+    display: block;
+}
+
+.evs-price-info {
+    display: block;
+    font-size: 12px;
+    color: #E53E3E;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.evs-extra-schuren-group .evs-price-info {
+    color: #D97706;
+    font-weight: 600;
+}
+
+.evs-info-box {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.evs-extra-schuren-section {
+    background-color: #fef2f2;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Text inputs */
+.evs-text-input,
+.evs-number-input,
+.evs-date-input,
+.evs-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.evs-text-input:focus,
+.evs-number-input:focus,
+.evs-date-input:focus,
+.evs-textarea:focus {
+    border-color: #E53E3E;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.evs-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.evs-help-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+/* Checkbox groups */
+.evs-checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.evs-checkbox-group input[type="checkbox"] {
+    margin-right: 12px;
+    margin-top: 2px;
+    transform: scale(1.2);
+}
+
+.evs-checkbox-label {
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+.evs-checkbox-label a {
+    color: #E53E3E;
+    text-decoration: none;
+}
+
+.evs-checkbox-label a:hover {
+    text-decoration: underline;
+}
+
+/* Buttons */
+.evs-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    min-width: 120px;
+}
+
+.evs-btn-next,
+.evs-btn-submit {
+    background: #E53E3E;
+    color: white;
+}
+
+.evs-btn-next:hover,
+.evs-btn-submit:hover {
+    background: #C73232;
+    transform: translateY(-2px);
+}
+
+.evs-btn-prev {
+    background: #6c757d;
+    color: white;
+}
+
+.evs-btn-prev:hover {
+    background: #545b62;
+}
+
+.evs-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Progress indicator */
+.evs-progress {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.evs-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.evs-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #E53E3E, #FF6B6B);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 11.11%; /* 1/9 steps */
+}
+
+.evs-progress-text {
+    font-size: 0.9em;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Summary section */
+.evs-summary {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    border-left: 4px solid #E53E3E;
+    margin-bottom: 25px;
+}
+
+.evs-summary h4 {
+    margin-top: 0;
+    color: #E53E3E;
+    font-size: 1.3em;
+}
+
+.evs-summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.evs-summary-item:last-child {
+    border-bottom: none;
+    font-weight: 600;
+    font-size: 1.1em;
+    color: #E53E3E;
+}
+
+.evs-summary-label {
+    font-weight: 500;
+}
+
+.evs-summary-value {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Loading overlay */
+.evs-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    z-index: 1000;
+}
+
+.evs-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e9ecef;
+    border-top: 4px solid #E53E3E;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+.evs-loading p {
+    font-size: 1.1em;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error states */
+.evs-error {
+    color: #E53E3E;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
+}
+
+.evs-form-group.has-error .evs-text-input,
+.evs-form-group.has-error .evs-number-input,
+.evs-form-group.has-error .evs-date-input,
+.evs-form-group.has-error .evs-textarea {
+    border-color: #E53E3E;
+}
+
+.evs-form-group.has-error .evs-radio-group {
+    border-color: #E53E3E;
+}
+
+/* Success messages */
+.evs-success-message {
+    background: #fef2f2;
+    color: #B91C1C;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #FECACA;
+    margin-bottom: 20px;
+}
+
+.evs-error-message {
+    background: #fee2e2;
+    color: #DC2626;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #FCA5A5;
+    margin-bottom: 20px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .evs-offerte-wrapper {
+        margin: 0 10px;
+        padding: 15px;
+    }
+    
+    .evs-form-title {
+        font-size: 1.8em;
+    }
+    
+    .evs-step h3 {
+        font-size: 1.3em;
+    }
+    
+    .evs-btn {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .evs-summary-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .evs-summary-value {
+        margin-top: 5px;
+    }
+}
+
+/* Calculation preview styling */
+.evs-calculation-preview {
+    background: #fef2f2;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #E53E3E;
+    margin-top: 15px;
+}
+
+/* Info box styling */
+.evs-info-box {
+    background: #fef2f2;
+    border: 1px solid #FECACA;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.evs-info-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #B91C1C;
+}
+
+.evs-info-box strong {
+    color: #991B1B;
+}
+
+/* Extra schuren group styling */
+.evs-extra-schuren-group {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+.evs-extra-schuren-group h4 {
+    margin: 0 0 10px 0;
+    color: #374151;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.evs-calculation-preview p {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
+.evs-calculation-preview .price-preview {
+    color: #E53E3E;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.evs-calculation-preview .strekkende-meter-preview {
+    color: #E53E3E;
+    font-weight: 600;
+}
+
+/* Additional styling for specific elements */
+.evs-radio-group .evs-text-input {
+    margin-top: 10px;
+    width: calc(100% - 30px);
+    margin-left: 30px;
+}
+
+/* Contact section styling - removed as it's not used in the form */

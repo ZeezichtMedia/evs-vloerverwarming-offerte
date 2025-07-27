@@ -252,11 +252,11 @@
 }
 
 /* Input fields */
-.evs-input-group, .evs-form-group {
+.evs-form-group {
     margin-bottom: 20px;
 }
 
-.evs-input-group label, .evs-form-group label {
+.evs-form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;

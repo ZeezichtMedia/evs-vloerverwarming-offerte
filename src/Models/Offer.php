@@ -19,6 +19,7 @@ class Offer
     public $installation_date;
     public $drilling_price;
     public $sealing_price;
+    public $distributor_price;
     public $status;
     public $created_at;
 
@@ -37,6 +38,14 @@ class Offer
      */
     public function calculatePrices(): void
     {
+        // SOLUTION: Validate the input before calculating
+        if (!isset($this->area) || !is_numeric($this->area) || $this->area <= 0) {
+            throw new \InvalidArgumentException('Oppervlakte (area) is ongeldig of ontbreekt.');
+        }
+        if (empty($this->floor_type)) {
+            throw new \InvalidArgumentException('Vloertype (floor_type) ontbreekt.');
+        }
+
         // Effective area for drilling is the provided m2 * 8.5
         $effectiveArea = (float)$this->area * 8.5;
 
@@ -70,9 +79,10 @@ class Offer
         }
         $this->drilling_price = round($drillingTotal, 2);
 
-        // Add distributor cost if applicable
+        // SOLUTION: Calculate the distributor price separately
+        $this->distributor_price = 0;
         if ($this->distributor === 'yes') {
-            $this->drilling_price += 185;
+            $this->distributor_price = 185;
         }
 
         // 2. Calculate Sealing Price (Dichtsmeren)
@@ -80,8 +90,9 @@ class Offer
         if ($this->sealing === 'yes') {
             // Base price for sealing is per m2
             $this->sealing_price = (float)$this->area * 12.75;
-            // Add sanding cost if floor is not clean (also per m2)
-            if (isset($this->floor_clean) && $this->floor_clean === 'no') {
+
+            // Add extra sanding cost if floor is not clean
+            if ($this->floor_clean === 'no') {
                 $this->sealing_price += (float)$this->area * 7.00;
             }
         }
@@ -94,8 +105,9 @@ class Offer
     {
         $vars = get_object_vars($this);
         // Ensure prices are formatted correctly for database
-        $vars['drilling_price'] = round((float)$this->drilling_price, 2);
-        $vars['sealing_price'] = round((float)$this->sealing_price, 2);
+        $vars['drilling_price']    = round((float)$this->drilling_price, 2);
+        $vars['sealing_price']     = round((float)$this->sealing_price, 2);
+        $vars['distributor_price'] = round((float)$this->distributor_price, 2); // Toevoegen voor consistentie
         return $vars;
     }
 }

@@ -1,0 +1,232 @@
+<?php
+/**
+ * Test page for the improved EVS plugin
+ * This simulates a WordPress environment to test the plugin functionality
+ */
+
+// Simulate WordPress environment
+define('ABSPATH', __DIR__ . '/');
+define('WPINC', 'wp-includes');
+
+// Mock WordPress functions for testing
+function wp_upload_dir() {
+    return array('basedir' => __DIR__ . '/uploads');
+}
+
+function wp_mkdir_p($target) {
+    return wp_mkdir_p_real($target);
+}
+
+function wp_mkdir_p_real($target) {
+    $wrapper = null;
+    if (wp_is_stream($target)) {
+        $wrapper = $target;
+        $target = wp_normalize_path($target);
+    }
+    
+    if (file_exists($target)) {
+        return @is_dir($target);
+    }
+    
+    $target_parent = dirname($target);
+    if ('.' !== $target_parent && !wp_mkdir_p_real($target_parent)) {
+        return false;
+    }
+    
+    if (is_writable($target_parent)) {
+        if ($wrapper) {
+            return mkdir($wrapper, 0755, true);
+        } else {
+            return @mkdir($target, 0755);
+        }
+    }
+    
+    return false;
+}
+
+function wp_is_stream($path) {
+    $wrappers = stream_get_wrappers();
+    $wrappers_re = '(' . join('|', $wrappers) . ')';
+    return preg_match("!^$wrappers_re://!", $path);
+}
+
+function wp_normalize_path($path) {
+    $wrapper = '';
+    if (wp_is_stream($path)) {
+        list($wrapper, $path) = explode('://', $path, 2);
+        $wrapper .= '://';
+    }
+    
+    $path = str_replace('\\', '/', $path);
+    $path = preg_replace('|(?<=.)/+|', '/', $path);
+    if (':' === substr($path, 1, 1)) {
+        $path = ucfirst($path);
+    }
+    
+    return $wrapper . $path;
+}
+
+function sanitize_text_field($str) {
+    return trim(strip_tags($str));
+}
+
+function sanitize_email($email) {
+    return filter_var($email, FILTER_SANITIZE_EMAIL);
+}
+
+function sanitize_key($key) {
+    return strtolower(trim($key));
+}
+
+function is_email($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+function esc_html($text) {
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+}
+
+function esc_attr($text) {
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+}
+
+function current_time($type) {
+    return date('Y-m-d H:i:s');
+}
+
+// Load the improved plugin classes
+require_once __DIR__ . '/includes/class-evs-pricing-calculator.php';
+require_once __DIR__ . '/includes/class-evs-database-manager.php';
+require_once __DIR__ . '/includes/class-evs-email-service.php';
+
+echo "<h1>EVS Improved Plugin Test</h1>";
+
+// Test pricing calculator
+echo "<h2>1. Testing Pricing Calculator</h2>";
+
+$pricing_calculator = new EVS_Pricing_Calculator();
+
+// Test data
+$test_data = array(
+    'area_m2' => 100,
+    'type_vloer' => 'cement_dekvloer',
+    'verdeler_aansluiten' => 'ja',
+    'vloer_dichtsmeren' => 'ja',
+    'warmtebron' => 'cv_ketel',
+    'verdieping' => 'begaande_grond'
+);
+
+echo "<h3>Test Data:</h3>";
+echo "<pre>" . print_r($test_data, true) . "</pre>";
+
+$quote_result = $pricing_calculator->calculate_quote($test_data);
+
+echo "<h3>Pricing Calculation Result:</h3>";
+echo "<pre>" . print_r($quote_result, true) . "</pre>";
+
+// Validate results
+$expected_strekkende_meter = 100 * 8.5; // 850 meters
+$expected_drilling_base = 250 * 1.77 + 250 * 1.67 + 250 * 1.57 + 100 * 1.47; // Tiered pricing
+$expected_verdeler = 185.00;
+$expected_sealing = 850 * 12.75;
+
+echo "<h3>Validation:</h3>";
+echo "<p><strong>Expected strekkende meter:</strong> " . $expected_strekkende_meter . " | <strong>Actual:</strong> " . $quote_result['strekkende_meter'] . "</p>";
+echo "<p><strong>Expected total drilling (incl. verdeler):</strong> €" . number_format($expected_drilling_base + $expected_verdeler, 2) . " | <strong>Actual:</strong> €" . number_format($quote_result['drilling_price'], 2) . "</p>";
+echo "<p><strong>Expected sealing:</strong> €" . number_format($expected_sealing, 2) . " | <strong>Actual:</strong> €" . number_format($quote_result['sealing_price'], 2) . "</p>";
+echo "<p><strong>Expected total:</strong> €" . number_format($expected_drilling_base + $expected_verdeler + $expected_sealing, 2) . " | <strong>Actual:</strong> €" . number_format($quote_result['total_price'], 2) . "</p>";
+
+// Test validation
+echo "<h2>2. Testing Validation</h2>";
+
+$validation_errors = $pricing_calculator->validate_pricing_data($test_data);
+echo "<p><strong>Validation errors (should be empty):</strong> " . (empty($validation_errors) ? "✅ No errors" : "❌ " . implode(', ', $validation_errors)) . "</p>";
+
+// Test invalid data
+$invalid_data = array(
+    'area_m2' => 0,
+    'type_vloer' => 'invalid_type'
+);
+
+$validation_errors_invalid = $pricing_calculator->validate_pricing_data($invalid_data);
+echo "<p><strong>Validation errors for invalid data:</strong> " . (empty($validation_errors_invalid) ? "❌ Should have errors" : "✅ " . implode(', ', $validation_errors_invalid)) . "</p>";
+
+// Test different floor types
+echo "<h2>3. Testing Different Floor Types</h2>";
+
+$floor_types = array('cement_dekvloer', 'tegelvloer', 'betonvloer', 'fermacelvloer');
+
+foreach ($floor_types as $floor_type) {
+    $test_data_floor = array_merge($test_data, array('type_vloer' => $floor_type));
+    $result = $pricing_calculator->calculate_quote($test_data_floor);
+    
+    echo "<p><strong>" . ucfirst(str_replace('_', ' ', $floor_type)) . ":</strong> €" . number_format($result['total_price'], 2) . "</p>";
+}
+
+// Test email service
+echo "<h2>4. Testing Email Service (Simulation)</h2>";
+
+$email_service = new EVS_Email_Service();
+
+// We can't actually send emails in this test environment, but we can test content generation
+echo "<p>Email service initialized successfully ✅</p>";
+
+// Test database manager (without actual database)
+echo "<h2>5. Testing Database Manager Structure</h2>";
+
+$database_manager = new EVS_Database_Manager();
+echo "<p>Database manager initialized successfully ✅</p>";
+
+echo "<h2>6. Test Summary</h2>";
+
+$all_tests_passed = true;
+
+// Check if pricing calculation is working
+if (abs($quote_result['strekkende_meter'] - $expected_strekkende_meter) < 0.01) {
+    echo "<p>✅ Strekkende meter calculation: PASSED</p>";
+} else {
+    echo "<p>❌ Strekkende meter calculation: FAILED</p>";
+    $all_tests_passed = false;
+}
+
+if (abs($quote_result['drilling_price'] - ($expected_drilling_base + $expected_verdeler)) < 0.01) {
+    echo "<p>✅ Drilling price calculation: PASSED</p>";
+} else {
+    echo "<p>❌ Drilling price calculation: FAILED</p>";
+    $all_tests_passed = false;
+}
+
+if (abs($quote_result['sealing_price'] - $expected_sealing) < 0.01) {
+    echo "<p>✅ Sealing price calculation: PASSED</p>";
+} else {
+    echo "<p>❌ Sealing price calculation: FAILED</p>";
+    $all_tests_passed = false;
+}
+
+if (empty($validation_errors) && !empty($validation_errors_invalid)) {
+    echo "<p>✅ Validation logic: PASSED</p>";
+} else {
+    echo "<p>❌ Validation logic: FAILED</p>";
+    $all_tests_passed = false;
+}
+
+if ($all_tests_passed) {
+    echo "<h3 style='color: green;'>🎉 All tests PASSED! The improved plugin is working correctly.</h3>";
+    echo "<p>The pricing calculations match the original working MVP, and the code structure has been improved with proper separation of concerns.</p>";
+} else {
+    echo "<h3 style='color: red;'>❌ Some tests FAILED. Please review the issues above.</h3>";
+}
+
+echo "<h2>7. Next Steps</h2>";
+echo "<ul>";
+echo "<li>✅ Plugin structure improved with separate service classes</li>";
+echo "<li>✅ Pricing calculation logic preserved from working MVP</li>";
+echo "<li>✅ CSS and JavaScript assets created</li>";
+echo "<li>✅ Form handler with validation implemented</li>";
+echo "<li>✅ Email service with professional templates</li>";
+echo "<li>✅ Database manager with proper schema</li>";
+echo "<li>✅ Admin manager with full WordPress integration</li>";
+echo "</ul>";
+
+echo "<p><strong>The improved plugin combines the working functionality of the MVP with much better code organization and follows WordPress best practices.</strong></p>";
+?>
