@@ -325,3 +325,44 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Price calculation states */
+.calculating {
+    opacity: 0.6;
+    position: relative;
+}
+.calculating::after {
+    content: "⟳";
+    animation: spin 1s linear infinite;
+    margin-left: 5px;
+}
+
+/* Price sidebar enhancements */
+.price-sidebar .price-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+.price-sidebar .price-item:last-child {
+    border-bottom: none;
+}
+.price-sidebar .price-label {
+    font-weight: 500;
+    color: #333;
+}
+.price-sidebar .price-value {
+    font-weight: 600;
+    color: #E53E3E;
+}
+.price-sidebar .total-price {
+    border-top: 2px solid #E53E3E;
+    padding-top: 12px;
+    margin-top: 8px;
+    font-size: 16px;
+}
+.price-sidebar .total-price .price-value {
+    font-size: 18px;
+    font-weight: 700;
+}

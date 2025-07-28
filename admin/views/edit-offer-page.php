@@ -241,6 +241,7 @@ $invoice_nonce_url = wp_nonce_url(admin_url('admin.php?page=evs-offertes&action=
                                 <input type="submit" name="send_offer" class="button button-large" value="<?php esc_attr_e('Offerte Verzenden', 'evs-vloerverwarming'); ?>" style="width:100%; text-align:center; margin-bottom: 10px;">
                                 <input type="submit" name="create_invoice" class="button button-large" value="<?php esc_attr_e('Factuur Genereren', 'evs-vloerverwarming'); ?>" style="width:100%; text-align:center;">
                             </div>
+                        </div>
                     </div>
                 </div>
             </div>

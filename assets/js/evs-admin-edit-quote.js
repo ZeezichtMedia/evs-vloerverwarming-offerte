@@ -19,7 +19,7 @@ jQuery(document).ready(function($) {
     }
 
     // --- Function to calculate the price via AJAX ---
-    function calculatePrice() {
+    function calculatePrice(showLoading = true) {
         const formData = $("#evs-edit-quote-form").serialize();
         const nonce = evs_admin_quote_data.nonce;
 
@@ -32,20 +32,24 @@ jQuery(document).ready(function($) {
                 form_data: formData,
             },
             beforeSend: function() {
-                // Optional: show a loading spinner
-                $(".price-sidebar .price-value").text("...");
+                if (showLoading) {
+                    // Only show loading if explicitly requested (not on initial load)
+                    $(".price-sidebar .price-value strong").addClass('calculating');
+                }
             },
             success: function(response) {
+                $(".price-sidebar .price-value strong").removeClass('calculating');
                 if (response.success) {
                     updatePriceDisplay(response.data);
                 } else {
                     console.error("Price calculation failed:", response.data.message);
-                    updatePriceDisplay({ drilling_price: 0, verdeler_price: 0, sealing_price: 0, sanding_price: 0, total_price: 0, strekkende_meter: 0 });
+                    // Don't reset to 0 on error, keep existing values
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
+                $(".price-sidebar .price-value strong").removeClass('calculating');
                 console.error("AJAX error:", textStatus, errorThrown);
-                updatePriceDisplay({ drilling_price: 0, verdeler_price: 0, sealing_price: 0, total_price: 0, strekkende_meter: 0 });
+                // Don't reset to 0 on error, keep existing values
             }
         });
     }
@@ -56,8 +60,9 @@ jQuery(document).ready(function($) {
         calculatePrice();
     });
 
-    // --- Initial price calculation on page load ---
-    calculatePrice();
+    // --- Initial price calculation on page load (without loading indicator) ---
+    // Don't calculate on initial load to preserve server-rendered values
+    // calculatePrice(false);
 
     // --- Event listeners for action buttons ---
     // Corrected IDs to match HTML (-btn suffix)
