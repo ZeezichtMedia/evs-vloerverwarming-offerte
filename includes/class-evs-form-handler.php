@@ -162,9 +162,15 @@ class EVS_Form_Handler {
         $sanitized['email'] = sanitize_email($data['email'] ?? '');
         
         // Radio/select fields
-        $select_fields = array('verdieping', 'type_vloer', 'warmtebron', 'verdeler_aansluiten', 'vloer_dichtsmeren', 'extra_schuren', 'montagedatum_type');
+        $select_fields = array('verdieping', 'type_vloer', 'warmtebron', 'montagedatum_type');
         foreach ($select_fields as $field) {
             $sanitized[$field] = sanitize_key($data[$field] ?? '');
+        }
+
+        // Handle Ja/Nee fields specifically, converting to 1 or 0
+        $boolean_fields = array('verdeler_aansluiten', 'vloer_dichtsmeren', 'extra_schuren');
+        foreach ($boolean_fields as $field) {
+            $sanitized[$field] = (isset($data[$field]) && strtolower($data[$field]) === 'ja') ? 1 : 0;
         }
         
         // Numeric fields - support both field names for compatibility
@@ -217,11 +223,11 @@ class EVS_Form_Handler {
             $errors['warmtebron'] = 'Warmtebron selectie is verplicht';
         }
         
-        if (empty($data['verdeler_aansluiten'])) {
+        if (!isset($data['verdeler_aansluiten']) || $data['verdeler_aansluiten'] === '') {
             $errors['verdeler_aansluiten'] = 'Verdeler aansluiten selectie is verplicht';
         }
-        
-        if (empty($data['vloer_dichtsmeren'])) {
+
+        if (!isset($data['vloer_dichtsmeren']) || $data['vloer_dichtsmeren'] === '') {
             $errors['vloer_dichtsmeren'] = 'Vloer dichtsmeren selectie is verplicht';
         }
         
