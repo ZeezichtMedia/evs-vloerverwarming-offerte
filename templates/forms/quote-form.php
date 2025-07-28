@@ -12,7 +12,7 @@
         <div class="evs-progress-sidebar">
             <!-- Horizontale voortgangsbalk -->
             <div class="evs-progress-bar-container">
-                <div class="evs-progress-bar" style="width: 14%;"></div>
+                <div class="evs-progress-bar" style="width: 12.5%;"></div>
             </div>
 
             <div class="evs-progress-item active" data-step="1">
@@ -49,23 +49,23 @@
             <div class="evs-progress-item" data-step="4">
                 <span class="evs-progress-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 4H20V20H4V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M4 9H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M9 20L9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M12 15L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </span>
-                <span class="evs-progress-text">Hoeveel m²</span>
-            </div>
-            <div class="evs-progress-item" data-step="5">
-                <span class="evs-progress-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
                 <span class="evs-progress-text">Warmtebron</span>
+            </div>
+            <div class="evs-progress-item" data-step="5">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4H20V20H4V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 9H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M9 20L9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 15L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Verdeler aansluiten</span>
             </div>
             <div class="evs-progress-item" data-step="6">
                 <span class="evs-progress-icon">
@@ -87,6 +87,15 @@
                     </svg>
                 </span>
                 <span class="evs-progress-text">Montagedatum</span>
+            </div>
+            <div class="evs-progress-item" data-step="8">
+                <span class="evs-progress-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="evs-progress-text">Jouw gegevens</span>
             </div>
         </div>
 
@@ -182,8 +191,8 @@
                     <h2>Hoeveel m²?</h2>
                     <div class="evs-floor-section">
                         <div class="evs-form-group">
-                            <label for="oppervlakte">Oppervlakte in m²:</label>
-                            <input type="number" id="oppervlakte" name="oppervlakte" min="1" max="10000" step="0.1" required placeholder="Bijvoorbeeld: 100">
+                            <label for="area_m2">Oppervlakte in m²:</label>
+                            <input type="number" id="area_m2" name="area_m2" min="1" max="10000" step="0.1" required placeholder="Bijvoorbeeld: 100">
                         </div>
                     </div>
                 </div>
@@ -279,7 +288,7 @@
                                 <div class="evs-option-check"></div>
                                 <span class="evs-option-text">Ja</span>
                                 <div class="evs-option-note">
-                                    <small><strong>Let op:</strong> Alleen mogelijk als de vloer schoon is, zonder lijmresten van vorige vloer. Bij lijmresten moet eerst geschuurd worden voor €7 per strekkende m².</small>
+                                    <small><strong>Let op:</strong> Alleen mogelijk als de vloer schoon is, zonder lijmresten van vorige vloer. Bij lijmresten moet eerst geschuurd worden (extra kosten).</small>
                                 </div>
                             </div>
                         </label>
@@ -305,14 +314,14 @@
                     <h2>Gewenste montagedatum?</h2>
                     <div class="evs-options-container">
                         <label class="evs-option-card">
-                            <input type="radio" name="montagedatum" value="datum" required>
+                            <input type="radio" name="montagedatum_type" value="datum" required>
                             <div class="evs-option-content">
                                 <div class="evs-option-check"></div>
                                 <span class="evs-option-text">Specifieke datum</span>
                             </div>
                         </label>
                         <label class="evs-option-card">
-                            <input type="radio" name="montagedatum" value="weet_niet">
+                            <input type="radio" name="montagedatum_type" value="weet_niet">
                             <div class="evs-option-content">
                                 <div class="evs-option-check"></div>
                                 <span class="evs-option-text">Weet ik nog niet</span>
@@ -320,8 +329,8 @@
                         </label>
                     </div>
                     <div class="evs-form-group" id="datum-input" style="display: none; margin-top: 15px;">
-                        <label for="gewenste_datum">Gewenste datum:</label>
-                        <input type="date" id="gewenste_datum" name="gewenste_datum" min="<?php echo date('Y-m-d'); ?>">
+                        <label for="montagedatum">Gewenste datum:</label>
+                        <input type="date" id="montagedatum" name="montagedatum" min="<?php echo date('Y-m-d'); ?>">
                     </div>
                 </div>
                 <div class="evs-form-navigation">

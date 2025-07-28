@@ -43,6 +43,8 @@ class EVS_PDF_Generator extends Fpdf {
     }
 
     function generate_quote_pdf($offer, $type) {
+        // SOLUTION: Convert the Euro symbol to the correct character set
+        $euro_symbol = iconv('UTF-8', 'ISO-8859-15//TRANSLIT', '€');
         $this->AliasNbPages();
         $this->AddPage();
         $this->SetFont('Arial', '', 12);
@@ -54,10 +56,10 @@ class EVS_PDF_Generator extends Fpdf {
 
         if ($type === 'drilling') {
             $this->Cell(0, 10, 'Betreft: Infrezen vloerverwarming', 0, 1);
-            $this->Cell(0, 10, 'Prijs: ' . chr(128) . ' ' . number_format($offer['drilling_price'], 2, ',', '.'), 0, 1);
+            $this->Cell(0, 10, 'Prijs: ' . $euro_symbol . ' ' . number_format($offer['drilling_price'], 2, ',', '.'), 0, 1);
         } elseif ($type === 'sealing') {
             $this->Cell(0, 10, 'Betreft: Dichtsmeren vloerverwarming', 0, 1);
-            $this->Cell(0, 10, 'Prijs: ' . chr(128) . ' ' . number_format($offer['sealing_price'], 2, ',', '.'), 0, 1);
+            $this->Cell(0, 10, 'Prijs: ' . $euro_symbol . ' ' . number_format($offer['sealing_price'], 2, ',', '.'), 0, 1);
         }
     }
 }

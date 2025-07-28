@@ -35,8 +35,18 @@ class EVS_Invoices_List_Table extends WP_List_Table {
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = [$columns, $hidden, $sortable];
 
-        $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'created_at';
-        $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'desc';
+        // Validate orderby parameter against a whitelist of sortable columns
+        $sortable_columns = $this->get_sortable_columns();
+        $orderby = 'created_at'; // Secure default
+        if (isset($_GET['orderby']) && array_key_exists($_GET['orderby'], $sortable_columns)) {
+            $orderby = $_GET['orderby'];
+        }
+
+        // Validate order parameter
+        $order = 'desc'; // Secure default
+        if (isset($_GET['order']) && in_array(strtolower($_GET['order']), ['asc', 'desc'])) {
+            $order = strtolower($_GET['order']);
+        }
 
         $total_items = $wpdb->get_var("SELECT COUNT(id) FROM $table_name");
 
@@ -48,12 +58,10 @@ class EVS_Invoices_List_Table extends WP_List_Table {
         $current_page = $this->get_pagenum();
         $offset = ($current_page - 1) * $per_page;
 
+        // The query is now safe as $orderby and $order are whitelisted
+        $query = "SELECT * FROM $table_name ORDER BY " . esc_sql($orderby) . " " . esc_sql($order) . " LIMIT %d OFFSET %d";
         $this->items = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM $table_name ORDER BY $orderby $order LIMIT %d OFFSET %d",
-                $per_page,
-                $offset
-            ),
+            $wpdb->prepare($query, $per_page, $offset),
             ARRAY_A
         );
     }
@@ -84,9 +92,13 @@ class EVS_Invoices_List_Table extends WP_List_Table {
     }
 
     function column_invoice_number($item) {
+        // Generate secure URLs with nonces for the actions
+        $edit_url = wp_nonce_url(sprintf('?page=evs-invoices&action=edit&invoice_id=%s', $item['id']), 'evs_edit_invoice_' . $item['id']);
+        $delete_url = wp_nonce_url(sprintf('?page=%s&action=delete&invoice_id=%s', $_REQUEST['page'], $item['id']), 'evs_delete_invoice_' . $item['id']);
+
         $actions = [
-            'edit'   => sprintf('<a href="?page=%s&action=%s&invoice_id=%s">Bewerken</a>', 'evs-invoices', 'edit', $item['id']),
-            'delete' => sprintf('<a href="?page=%s&action=%s&invoice_id=%s">Verwijderen</a>', $_REQUEST['page'], 'delete', $item['id']),
+            'edit'   => sprintf('<a href="%s">Bewerken</a>', esc_url($edit_url)),
+            'delete' => sprintf('<a href="%s" onclick="return confirm(\'Weet u zeker dat u deze factuur wilt verwijderen?\')">Verwijderen</a>', esc_url($delete_url)),
         ];
         return sprintf('%1$s %2$s', $item['invoice_number'], $this->row_actions($actions));
     }

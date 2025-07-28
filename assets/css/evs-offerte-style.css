@@ -1,46 +1,23 @@
 /* EVS Vloerverwarming Offerte Formulier Stijlen */
 
-/* Universal box-sizing */
-*, *::before, *::after {
-    box-sizing: border-box;
-}
-
-/* CSS Custom Properties (Variabelen) */
-:root {
-    --evs-primary-color: #dc3545;
-    --evs-light-gray: #eee;
-    --evs-border-color: #e9ecef;
-    --evs-background-light: #f9f9f9;
-    --evs-background-lighter: #f8f9fa;
-    --evs-text-dark: #222;
-    --evs-text-medium: #666;
-    --evs-text-light: #999;
-    --evs-font-family: 'Helvetica Neue', Arial, sans-serif;
-    --evs-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    --evs-border-radius: 8px;
-    --evs-success-color: #28a745;
-    --evs-warning-color: #ffc107;
-    --evs-danger-color: #dc3545;
-}
-
 /* Algemene container */
 .evs-offerte-formulier-container {
-    font-family: var(--evs-font-family);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     max-width: 1000px;
     margin: 40px auto;
-    background-color: var(--evs-background-light);
-    border-radius: var(--evs-border-radius);
+    background-color: #f9f9f9;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: var(--evs-shadow);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .evs-header {
     padding: 25px 30px;
-    border-bottom: 1px solid var(--evs-light-gray);
+    border-bottom: 1px solid #eee;
 }
 
 .evs-logo {
-    color: var(--evs-primary-color);
+    color: #dc3545;
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 10px;
@@ -52,7 +29,7 @@
     display: inline-block;
     width: 20px;
     height: 20px;
-    background-color: var(--evs-primary-color);
+    background-color: #dc3545;
     border-radius: 50%;
     margin-right: 8px;
 }
@@ -60,12 +37,12 @@
 .evs-header h1 {
     font-size: 28px;
     margin: 0 0 5px 0;
-    color: var(--evs-text-dark);
+    color: #222;
 }
 
 .evs-subtitle {
     font-size: 16px;
-    color: var(--evs-text-medium);
+    color: #666;
     margin: 0;
 }
 
@@ -101,19 +78,19 @@
     display: flex;
     align-items: center;
     padding: 15px 30px;
-    color: var(--evs-text-light);
+    color: #999;
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .evs-progress-item.active {
-    color: var(--evs-primary-color);
+    color: #dc3545;
     background-color: #fff5f5;
-    border-right: 3px solid var(--evs-primary-color);
+    border-right: 3px solid #dc3545;
 }
 
 .evs-progress-item.completed {
-    color: var(--evs-success-color);
+    color: #28a745;
 }
 
 .evs-progress-icon {
@@ -147,7 +124,7 @@
 
 .evs-step-content h2 {
     font-size: 24px;
-    color: var(--evs-text-dark);
+    color: #222;
     margin: 0 0 25px 0;
     font-weight: 600;
 }
@@ -204,8 +181,8 @@
 }
 
 .evs-option-card.selected .evs-option-check {
-    border-color: var(--evs-primary-color);
-    background-color: var(--evs-primary-color);
+    border-color: #dc3545;
+    background-color: #dc3545;
 }
 
 .evs-option-card.selected .evs-option-check::after {
@@ -227,21 +204,21 @@
 }
 
 .evs-option-card.selected .evs-option-text {
-    color: var(--evs-primary-color);
+    color: #dc3545;
 }
 
 /* Floor sections */
 .evs-floor-section {
     margin-bottom: 25px;
     padding: 20px;
-    background-color: var(--evs-background-lighter);
-    border-radius: var(--evs-border-radius);
-    border-left: 4px solid var(--evs-primary-color);
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #dc3545;
 }
 
 .evs-floor-section h3 {
     margin: 0 0 15px 0;
-    color: var(--evs-primary-color);
+    color: #dc3545;
     font-size: 18px;
     font-weight: 600;
 }
@@ -297,9 +274,9 @@
 
 /* Contact form */
 .evs-contact-form {
-    background-color: var(--evs-background-lighter);
+    background-color: #f8f9fa;
     padding: 25px;
-    border-radius: var(--evs-border-radius);
+    border-radius: 8px;
     margin-bottom: 30px;
 }
 
@@ -309,7 +286,7 @@
     justify-content: space-between;
     align-items: center;
     padding-top: 30px;
-    border-top: 1px solid var(--evs-light-gray);
+    border-top: 1px solid #eee;
 }
 
 .evs-prev-btn,
@@ -338,7 +315,7 @@
 
 .evs-next-btn,
 .evs-submit-btn {
-    background-color: var(--evs-primary-color);
+    background-color: #dc3545;
     color: #fff;
 }
 
@@ -516,16 +493,14 @@
 }
 
 /* Accessibility improvements */
-.evs-offerte-formulier-container .evs-option-card:focus-within {
-    outline: 2px solid var(--evs-primary-color);
+.evs-option-card:focus-within {
+    outline: 2px solid #dc3545;
     box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.3);
 }
 
-/* Specifieke focus stijlen voor formulier elementen */
-.evs-offerte-formulier-container input:focus,
-.evs-offerte-formulier-container select:focus,
-.evs-offerte-formulier-container textarea:focus {
-    outline: 2px solid var(--evs-primary-color);
-    border-color: var(--evs-primary-color);
-    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid #dc3545;
+    border-color: #dc3545;
 }

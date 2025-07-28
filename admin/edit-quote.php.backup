@@ -1,0 +1,426 @@
+<?php
+/**
+ * Edit Quote Admin Page
+ */
+
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Check if user has admin capabilities
+if (!current_user_can('manage_options')) {
+    wp_die('You do not have sufficient permissions to access this page.');
+}
+
+// Get quote ID
+$quote_id = intval($_GET['quote_id'] ?? 0);
+if (!$quote_id) {
+    wp_die('Invalid quote ID');
+}
+
+// Initialize services
+global $evs_database_manager, $evs_pricing_calculator;
+
+// Get quote data
+$quote = $evs_database_manager->get_quote($quote_id);
+if (!$quote) {
+    wp_die('Quote not found');
+}
+
+// Handle form submission
+if ($_POST && check_admin_referer('edit_quote_' . $quote_id)) {
+    // Get the action
+    $action = sanitize_text_field($_POST['action'] ?? 'save');
+    
+    // Sanitize and update quote data
+    $updated_data = [
+        'naam' => sanitize_text_field($_POST['naam']),
+        'email' => sanitize_email($_POST['email']),
+        'telefoon' => sanitize_text_field($_POST['telefoon']),
+        'adres' => sanitize_text_field($_POST['adres']),
+        'verdieping' => sanitize_text_field($_POST['verdieping']),
+        'type_vloer' => sanitize_text_field($_POST['type_vloer']),
+        'area_m2' => floatval($_POST['area_m2']),
+        'warmtebron' => sanitize_text_field($_POST['warmtebron']),
+        'verdeler_aansluiten' => sanitize_text_field($_POST['verdeler_aansluiten']),
+        'vloer_dichtsmeren' => sanitize_text_field($_POST['vloer_dichtsmeren']),
+        'extra_schuren' => sanitize_text_field($_POST['extra_schuren']),
+        'montagedatum' => sanitize_text_field($_POST['montagedatum']),
+        'opmerkingen' => sanitize_textarea_field($_POST['opmerkingen']),
+        'status' => sanitize_text_field($_POST['status'])
+    ];
+    
+    // Recalculate pricing
+    $price_breakdown = $evs_pricing_calculator->calculate_quote($updated_data);
+    $updated_data['drilling_price'] = $price_breakdown['drilling']['total'];
+    $updated_data['sealing_price'] = $price_breakdown['sealing']['total'];
+    $updated_data['total_price'] = $price_breakdown['grand_total'];
+    
+    // Update quote first
+    $success = $evs_database_manager->update_quote($quote_id, $updated_data);
+    
+    if ($success) {
+        // Refresh quote data
+        $quote = $evs_database_manager->get_quote($quote_id);
+        
+        // Handle different actions
+        switch ($action) {
+            case 'save':
+                echo '<div class="notice notice-success"><p><strong>Offerte opgeslagen!</strong> Alle wijzigingen zijn bewaard.</p></div>';
+                break;
+                
+            case 'send_quote':
+                // Send quote to customer
+                $email_success = $evs_email_service->send_quote_to_customer($quote, $quote_id);
+                if ($email_success) {
+                    $evs_database_manager->update_quote_status($quote_id, 'sent');
+                    echo '<div class="notice notice-success"><p><strong>Offerte verzonden!</strong> De offerte is per e-mail naar de klant gestuurd.</p></div>';
+                } else {
+                    echo '<div class="notice notice-error"><p><strong>Fout bij verzenden!</strong> De offerte kon niet worden verzonden.</p></div>';
+                }
+                break;
+                
+            case 'create_invoice':
+                // Create invoice from quote
+                $invoice_data = [
+                    'quote_id' => $quote_id,
+                    'customer_name' => $quote['naam'],
+                    'customer_email' => $quote['email'],
+                    'total_amount' => $quote['total_price'],
+                    'status' => 'pending',
+                    'created_at' => current_time('mysql')
+                ];
+                
+                $invoice_id = $evs_database_manager->save_invoice($invoice_data);
+                if ($invoice_id) {
+                    $evs_database_manager->update_quote_status($quote_id, 'invoiced');
+                    echo '<div class="notice notice-success"><p><strong>Factuur aangemaakt!</strong> Factuur #' . $invoice_id . ' is succesvol aangemaakt.</p></div>';
+                } else {
+                    echo '<div class="notice notice-error"><p><strong>Fout bij factuur!</strong> De factuur kon niet worden aangemaakt.</p></div>';
+                }
+                break;
+        }
+    } else {
+        echo '<div class="notice notice-error"><p>Fout bij het bijwerken van de offerte.</p></div>';
+    }
+}
+?>
+
+<div class="wrap">
+    <!-- Back arrow -->
+    <div class="evs-page-header">
+        <a href="<?php echo admin_url('admin.php?page=evs-offertes'); ?>" class="evs-back-link">
+            <span class="dashicons dashicons-arrow-left-alt"></span> Terug naar Offertes
+        </a>
+        <h1>Offerte Bewerken #<?php echo $quote_id; ?></h1>
+    </div>
+    
+    <form method="post" action="">
+        <?php wp_nonce_field('edit_quote_' . $quote_id); ?>
+        
+        <table class="form-table">
+            <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="naam">Naam</label>
+                    </th>
+                    <td>
+                        <input type="text" id="naam" name="naam" value="<?php echo esc_attr($quote['naam']); ?>" class="regular-text" required>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="email">E-mail</label>
+                    </th>
+                    <td>
+                        <input type="email" id="email" name="email" value="<?php echo esc_attr($quote['email']); ?>" class="regular-text" required>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="telefoon">Telefoon</label>
+                    </th>
+                    <td>
+                        <input type="text" id="telefoon" name="telefoon" value="<?php echo esc_attr($quote['telefoon']); ?>" class="regular-text">
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="adres">Adres</label>
+                    </th>
+                    <td>
+                        <input type="text" id="adres" name="adres" value="<?php echo esc_attr($quote['adres']); ?>" class="regular-text">
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="verdieping">Verdieping</label>
+                    </th>
+                    <td>
+                        <select id="verdieping" name="verdieping">
+                            <option value="begaande_grond" <?php selected($quote['verdieping'], 'begaande_grond'); ?>>Begaande grond</option>
+                            <option value="eerste_verdieping" <?php selected($quote['verdieping'], 'eerste_verdieping'); ?>>Eerste verdieping</option>
+                            <option value="zolder" <?php selected($quote['verdieping'], 'zolder'); ?>>Zolder</option>
+                            <option value="anders" <?php selected($quote['verdieping'], 'anders'); ?>>Anders</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="type_vloer">Type Vloer</label>
+                    </th>
+                    <td>
+                        <select id="type_vloer" name="type_vloer" required>
+                            <option value="cement_dekvloer" <?php selected($quote['type_vloer'], 'cement_dekvloer'); ?>>Cement dekvloer</option>
+                            <option value="tegelvloer" <?php selected($quote['type_vloer'], 'tegelvloer'); ?>>Tegelvloer</option>
+                            <option value="betonvloer" <?php selected($quote['type_vloer'], 'betonvloer'); ?>>Betonvloer</option>
+                            <option value="fermacelvloer" <?php selected($quote['type_vloer'], 'fermacelvloer'); ?>>Fermacelvloer</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="area_m2">Oppervlakte (m²)</label>
+                    </th>
+                    <td>
+                        <input type="number" id="area_m2" name="area_m2" value="<?php echo esc_attr($quote['area_m2']); ?>" step="0.1" min="0" class="small-text" required>
+                        <span class="description">m²</span>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="warmtebron">Warmtebron</label>
+                    </th>
+                    <td>
+                        <select id="warmtebron" name="warmtebron">
+                            <option value="cv_ketel" <?php selected($quote['warmtebron'], 'cv_ketel'); ?>>CV ketel</option>
+                            <option value="hybride_warmtepomp" <?php selected($quote['warmtebron'], 'hybride_warmtepomp'); ?>>Hybride warmtepomp</option>
+                            <option value="volledige_warmtepomp" <?php selected($quote['warmtebron'], 'volledige_warmtepomp'); ?>>Volledige warmtepomp</option>
+                            <option value="stadsverwarming" <?php selected($quote['warmtebron'], 'stadsverwarming'); ?>>Stadsverwarming</option>
+                            <option value="toekomstige_warmtepomp" <?php selected($quote['warmtebron'], 'toekomstige_warmtepomp'); ?>>Toekomstige warmtepomp</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="verdeler_aansluiten">Verdeler Aansluiten</label>
+                    </th>
+                    <td>
+                        <select id="verdeler_aansluiten" name="verdeler_aansluiten">
+                            <option value="ja" <?php selected($quote['verdeler_aansluiten'], 'ja'); ?>>Ja (+€185)</option>
+                            <option value="nee" <?php selected($quote['verdeler_aansluiten'], 'nee'); ?>>Nee</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="vloer_dichtsmeren">Vloer Dichtsmeren</label>
+                    </th>
+                    <td>
+                        <select id="vloer_dichtsmeren" name="vloer_dichtsmeren">
+                            <option value="ja" <?php selected($quote['vloer_dichtsmeren'], 'ja'); ?>>Ja</option>
+                            <option value="nee" <?php selected($quote['vloer_dichtsmeren'], 'nee'); ?>>Nee</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="extra_schuren">Extra Schuren</label>
+                    </th>
+                    <td>
+                        <select id="extra_schuren" name="extra_schuren">
+                            <option value="ja" <?php selected($quote['extra_schuren'], 'ja'); ?>>Ja (+€7/m²)</option>
+                            <option value="nee" <?php selected($quote['extra_schuren'], 'nee'); ?>>Nee</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="montagedatum">Montagedatum</label>
+                    </th>
+                    <td>
+                        <input type="text" id="montagedatum" name="montagedatum" value="<?php echo esc_attr($quote['montagedatum']); ?>" class="regular-text">
+                        <p class="description">Bijv. "Over 2 weken" of specifieke datum</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="status">Status</label>
+                    </th>
+                    <td>
+                        <select id="status" name="status">
+                            <option value="pending" <?php selected($quote['status'], 'pending'); ?>>In behandeling</option>
+                            <option value="sent" <?php selected($quote['status'], 'sent'); ?>>Verzonden</option>
+                            <option value="approved" <?php selected($quote['status'], 'approved'); ?>>Goedgekeurd</option>
+                            <option value="completed" <?php selected($quote['status'], 'completed'); ?>>Voltooid</option>
+                            <option value="cancelled" <?php selected($quote['status'], 'cancelled'); ?>>Geannuleerd</option>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="opmerkingen">Opmerkingen</label>
+                    </th>
+                    <td>
+                        <textarea id="opmerkingen" name="opmerkingen" rows="4" class="large-text"><?php echo esc_textarea($quote['opmerkingen']); ?></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="evs-pricing-summary">
+            <h3>Prijs Overzicht</h3>
+            <table class="widefat fixed">
+                <tr>
+                    <td><strong>Boorprijs:</strong></td>
+                    <td>€<?php echo number_format($quote['drilling_price'], 2, ',', '.'); ?></td>
+                </tr>
+                <tr>
+                    <td><strong>Dichtsmeerprijs:</strong></td>
+                    <td>€<?php echo number_format($quote['sealing_price'], 2, ',', '.'); ?></td>
+                </tr>
+                <tr style="border-top: 2px solid #E53E3E;">
+                    <td><strong>Totaalprijs:</strong></td>
+                    <td><strong>€<?php echo number_format($quote['total_price'], 2, ',', '.'); ?></strong></td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="evs-action-buttons">
+            <button type="submit" name="action" value="save" class="button button-primary button-large" id="save-quote">
+                <span class="dashicons dashicons-yes"></span> Offerte Opslaan
+            </button>
+            
+            <button type="submit" name="action" value="send_quote" class="button button-secondary button-large" id="send-quote">
+                <span class="dashicons dashicons-email-alt"></span> Offerte Versturen
+            </button>
+            
+            <button type="submit" name="action" value="create_invoice" class="button button-secondary button-large" id="create-invoice">
+                <span class="dashicons dashicons-media-document"></span> Factuur Aanmaken
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Page Header */
+    .evs-page-header {
+        margin-bottom: 20px;
+    }
+    
+    .evs-back-link {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        color: #0073aa;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .evs-back-link:hover {
+        color: #005a87;
+    }
+    
+    .evs-back-link .dashicons {
+        margin-right: 5px;
+    }
+    
+    .evs-page-header h1 {
+        margin: 10px 0 0 0;
+        color: #23282d;
+    }
+    
+    /* Pricing Summary */
+    .evs-pricing-summary {
+        background: #fef2f2;
+        border: 1px solid #FECACA;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        max-width: 400px;
+    }
+    
+    .evs-pricing-summary h3 {
+        margin-top: 0;
+        color: #B91C1C;
+    }
+    
+    .evs-pricing-summary table td {
+        padding: 8px 12px;
+    }
+    
+    /* Action Buttons */
+    .evs-action-buttons {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 20px;
+        margin: 30px 0;
+        text-align: center;
+    }
+    
+    .evs-action-buttons button {
+        margin: 0 10px;
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        min-width: 160px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .evs-action-buttons button:first-child {
+        background: #E53E3E;
+        border-color: #DC2626;
+        color: white;
+    }
+    
+    .evs-action-buttons button:first-child:hover {
+        background: #DC2626;
+        border-color: #B91C1C;
+    }
+    
+    .evs-action-buttons button:not(:first-child) {
+        background: #f8f9fa;
+        border-color: #6c757d;
+        color: #495057;
+    }
+    
+    .evs-action-buttons button:not(:first-child):hover {
+        background: #e9ecef;
+        border-color: #5a6268;
+        color: #343a40;
+    }
+    
+    .evs-action-buttons .dashicons {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .evs-action-buttons button {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+</style>
