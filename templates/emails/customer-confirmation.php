@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Load email header
-$this->get_email_header($email_heading);
+$email_service->get_email_header($email_heading);
 
 ?>
 <p>Beste <?php echo esc_html($quote_data['naam']); ?>,</p>
@@ -28,4 +28,4 @@ $this->get_email_header($email_heading);
 <?php
 
 // Load email footer
-$this->get_email_footer();
+$email_service->get_email_footer();

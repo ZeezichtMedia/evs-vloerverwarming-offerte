@@ -114,29 +114,39 @@ class EVS_Pricing_Calculator {
      * @return float The total tiered price.
      */
     private function calculate_cement_tiered_price($strekkende_meter) {
+        // Convert strekkende meter back to area to apply tier logic correctly
+        $area_m2 = $strekkende_meter / self::PIPE_PER_M2;
         $total_price = 0;
-        $remaining_meters = $strekkende_meter;
+        $remaining_area = $area_m2;
         
-        if ($remaining_meters > 0) {
-            $tier1_meters = min($remaining_meters, self::CEMENT_TIER_1_METERS);
-            $total_price += $tier1_meters * self::CEMENT_TIER_1_PRICE;
-            $remaining_meters -= $tier1_meters;
+        // Tier 1: First 250 m²
+        if ($remaining_area > 0) {
+            $tier1_area = min($remaining_area, self::CEMENT_TIER_1_METERS);
+            $tier1_strekkende = $tier1_area * self::PIPE_PER_M2;
+            $total_price += $tier1_strekkende * self::CEMENT_TIER_1_PRICE;
+            $remaining_area -= $tier1_area;
         }
         
-        if ($remaining_meters > 0) {
-            $tier2_meters = min($remaining_meters, self::CEMENT_TIER_2_METERS);
-            $total_price += $tier2_meters * self::CEMENT_TIER_2_PRICE;
-            $remaining_meters -= $tier2_meters;
+        // Tier 2: Next 250 m²
+        if ($remaining_area > 0) {
+            $tier2_area = min($remaining_area, self::CEMENT_TIER_2_METERS);
+            $tier2_strekkende = $tier2_area * self::PIPE_PER_M2;
+            $total_price += $tier2_strekkende * self::CEMENT_TIER_2_PRICE;
+            $remaining_area -= $tier2_area;
         }
         
-        if ($remaining_meters > 0) {
-            $tier3_meters = min($remaining_meters, self::CEMENT_TIER_3_METERS);
-            $total_price += $tier3_meters * self::CEMENT_TIER_3_PRICE;
-            $remaining_meters -= $tier3_meters;
+        // Tier 3: Next 250 m²
+        if ($remaining_area > 0) {
+            $tier3_area = min($remaining_area, self::CEMENT_TIER_3_METERS);
+            $tier3_strekkende = $tier3_area * self::PIPE_PER_M2;
+            $total_price += $tier3_strekkende * self::CEMENT_TIER_3_PRICE;
+            $remaining_area -= $tier3_area;
         }
         
-        if ($remaining_meters > 0) {
-            $total_price += $remaining_meters * self::CEMENT_TIER_4_PRICE;
+        // Tier 4: Remaining area
+        if ($remaining_area > 0) {
+            $tier4_strekkende = $remaining_area * self::PIPE_PER_M2;
+            $total_price += $tier4_strekkende * self::CEMENT_TIER_4_PRICE;
         }
         
         return $total_price;

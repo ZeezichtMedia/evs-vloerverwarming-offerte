@@ -244,8 +244,8 @@ class EVS_Database_Manager {
             $quote_id
         ));
         if ($existing_invoice) {
-            error_log('EVS Invoice Error: An invoice already exists for quote ID ' . $quote_id);
-            return false; // Prevent creating a duplicate
+            error_log('EVS Invoice Info: Invoice already exists for quote ID ' . $quote_id . ', returning existing invoice ID: ' . $existing_invoice);
+            return (int) $existing_invoice; // Return existing invoice ID instead of false
         }
 
         // Populate all required fields

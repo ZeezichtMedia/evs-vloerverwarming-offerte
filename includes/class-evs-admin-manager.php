@@ -135,14 +135,19 @@ class EVS_Admin_Manager {
             $_GET['admin_action'] === 'edit' &&
             isset($_GET['quote_id'])
         ) {
-            if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_key($_GET['_wpnonce']), 'evs_admin_action_edit_' . intval($_GET['quote_id']))) {
-                wp_die(__('Security check failed.', 'evs-vloerverwarming'));
-            }
-
-            $quote_id = intval($_GET['quote_id']);
-            $redirect_url = admin_url('admin.php?page=evs-edit-quote&quote_id=' . $quote_id);
-
-            wp_redirect($redirect_url);
+            wp_redirect(add_query_arg(['page' => 'evs-edit-quote', 'quote_id' => intval($_GET['quote_id'])], admin_url('admin.php')));
+            exit;
+        }
+        
+        // Handle invoice PDF download
+        if (
+            isset($_GET['page']) &&
+            $_GET['page'] === 'evs-invoices' &&
+            isset($_GET['action']) &&
+            $_GET['action'] === 'download_pdf' &&
+            isset($_GET['invoice_id'])
+        ) {
+            $this->generate_invoice_pdf(intval($_GET['invoice_id']));
             exit;
         }
     }
@@ -173,11 +178,83 @@ class EVS_Admin_Manager {
      * Display invoices page
      */
     public function display_invoices_page() {
+        // Get all invoices
+        $invoices = $this->database_manager->get_invoices();
+        
         ?>
         <div class="wrap">
             <h1>Facturen</h1>
-            <p>Factuuroverzicht - functionaliteit wordt binnenkort toegevoegd.</p>
+            
+            <?php if (empty($invoices)): ?>
+                <div class="notice notice-info">
+                    <p>Er zijn nog geen facturen aangemaakt.</p>
+                </div>
+            <?php else: ?>
+                <table class="wp-list-table widefat fixed striped">
+                    <thead>
+                        <tr>
+                            <th>Factuurnummer</th>
+                            <th>Klant</th>
+                            <th>Offerte ID</th>
+                            <th>Bedrag</th>
+                            <th>Status</th>
+                            <th>Factuurdatum</th>
+                            <th>Vervaldatum</th>
+                            <th>Acties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($invoices as $invoice): ?>
+                            <tr>
+                                <td><strong>#<?php echo esc_html($invoice['invoice_number']); ?></strong></td>
+                                <td>
+                                    <?php echo esc_html($invoice['customer_name']); ?><br>
+                                    <small><?php echo esc_html($invoice['customer_email']); ?></small>
+                                </td>
+                                <td>
+                                    <a href="<?php echo esc_url(add_query_arg(['page' => 'evs-edit-quote', 'quote_id' => $invoice['quote_id']], admin_url('admin.php'))); ?>">
+                                        #<?php echo esc_html($invoice['quote_id']); ?>
+                                    </a>
+                                </td>
+                                <td>€ <?php echo esc_html(number_format($invoice['total_amount'], 2, ',', '.')); ?></td>
+                                <td>
+                                    <span class="invoice-status status-<?php echo esc_attr($invoice['status']); ?>">
+                                        <?php echo esc_html($this->format_invoice_status($invoice['status'])); ?>
+                                    </span>
+                                </td>
+                                <td><?php echo esc_html(date('d-m-Y', strtotime($invoice['invoice_date']))); ?></td>
+                                <td><?php echo esc_html(date('d-m-Y', strtotime($invoice['due_date']))); ?></td>
+                                <td>
+                                    <a href="<?php echo esc_url(add_query_arg(['page' => 'evs-invoices', 'action' => 'download_pdf', 'invoice_id' => $invoice['id']], admin_url('admin.php'))); ?>" class="button button-small">PDF</a>
+                                    <a href="<?php echo esc_url(add_query_arg(['page' => 'evs-edit-invoice', 'invoice_id' => $invoice['id']], admin_url('admin.php'))); ?>" class="button button-small">Bewerken</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
         </div>
+        
+        <style>
+        .invoice-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-unpaid {
+            background-color: #ffeaa7;
+            color: #d63031;
+        }
+        .status-paid {
+            background-color: #55a3ff;
+            color: white;
+        }
+        .status-overdue {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        </style>
         <?php
     }
     
@@ -275,6 +352,14 @@ class EVS_Admin_Manager {
                     case 'invoice_created':
                         $message_type = 'success';
                         $message_text = 'Factuur succesvol aangemaakt.';
+                        break;
+                    case 'invoice_created_and_sent':
+                        $message_type = 'success';
+                        $message_text = 'Factuur succesvol aangemaakt en verzonden naar de klant.';
+                        break;
+                    case 'invoice_created_not_sent':
+                        $message_type = 'warning';
+                        $message_text = 'Factuur succesvol aangemaakt, maar kon niet worden verzonden naar de klant.';
                         break;
                     case 'save_error':
                         $db_error = isset($_GET['db_error']) ? urldecode($_GET['db_error']) : '';
@@ -404,7 +489,15 @@ class EVS_Admin_Manager {
                 }
                 // Action: Save and Send Offer
                 $quote = $this->database_manager->get_quote($quote_id);
+                
+                // Debug logging
+                error_log('EVS Plugin: Attempting to send quote #' . $quote_id);
+                error_log('EVS Plugin: Quote data: ' . print_r($quote, true));
+                
                 $email_success = $this->email_service->send_quote_to_customer($quote, $quote_id);
+                
+                error_log('EVS Plugin: Email send result: ' . ($email_success ? 'SUCCESS' : 'FAILED'));
+                
                 $message = $email_success ? 'sent' : 'send_error';
                 if ($email_success) {
                     $this->database_manager->update_quote($quote_id, ['status' => 'sent']);
@@ -415,9 +508,20 @@ class EVS_Admin_Manager {
                 }
                 // Action: Save and Create Invoice
                 $invoice_id = $this->database_manager->create_invoice_from_quote($quote_id);
-                $message = $invoice_id ? 'invoice_created' : 'invoice_error';
+                
                 if ($invoice_id) {
+                    // Get the created invoice data
+                    $invoice_data = $this->database_manager->get_invoice($invoice_id);
+                    
+                    // Send invoice email to customer
+                    $email_success = $this->email_service->send_invoice_to_customer($invoice_data, $invoice_id);
+                    
+                    // Update quote status
                     $this->database_manager->update_quote($quote_id, ['status' => 'invoiced']);
+                    
+                    $message = $email_success ? 'invoice_created_and_sent' : 'invoice_created_not_sent';
+                } else {
+                    $message = 'invoice_error';
                 }
             } elseif (isset($_POST['save_offer'])) {
                 // Action: Just Save (default)
@@ -469,10 +573,115 @@ class EVS_Admin_Manager {
             'pending' => 'In behandeling',
             'sent' => 'Verzonden',
             'accepted' => 'Geaccepteerd',
+            'declined' => 'Afgewezen',
+            'invoiced' => 'Gefactureerd',
             'completed' => 'Voltooid'
         );
         
         return $statuses[$status] ?? $status;
+    }
+    
+    /**
+     * Format invoice status for display
+     */
+    private function format_invoice_status($status) {
+        $statuses = array(
+            'unpaid' => 'Onbetaald',
+            'paid' => 'Betaald',
+            'overdue' => 'Achterstallig',
+            'cancelled' => 'Geannuleerd'
+        );
+        
+        return $statuses[$status] ?? $status;
+    }
+    
+    /**
+     * Generate and download invoice PDF
+     */
+    private function generate_invoice_pdf($invoice_id) {
+        $invoice = $this->database_manager->get_invoice($invoice_id);
+        
+        if (!$invoice) {
+            wp_die('Factuur niet gevonden.');
+        }
+        
+        // For now, generate a simple HTML version that can be printed as PDF
+        // In the future, this could be enhanced with a proper PDF library
+        
+        header('Content-Type: text/html; charset=utf-8');
+        header('Content-Disposition: inline; filename="factuur-' . $invoice['invoice_number'] . '.html"');
+        
+        ?>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Factuur <?php echo esc_html($invoice['invoice_number']); ?></title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                .header { text-align: center; margin-bottom: 30px; }
+                .invoice-details { margin-bottom: 30px; }
+                .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                .invoice-table th, .invoice-table td { padding: 10px; border: 1px solid #ddd; }
+                .invoice-table th { background-color: #f5f5f5; }
+                .total-row { font-weight: bold; background-color: #f9f9f9; }
+                .payment-info { margin-top: 30px; }
+                @media print { body { margin: 0; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>EVS Vloerverwarmingen</h1>
+                <h2>Factuur <?php echo esc_html($invoice['invoice_number']); ?></h2>
+            </div>
+            
+            <div class="invoice-details">
+                <p><strong>Factuurdatum:</strong> <?php echo esc_html(date('d-m-Y', strtotime($invoice['invoice_date']))); ?></p>
+                <p><strong>Vervaldatum:</strong> <?php echo esc_html(date('d-m-Y', strtotime($invoice['due_date']))); ?></p>
+                <p><strong>Klant:</strong> <?php echo esc_html($invoice['customer_name']); ?></p>
+                <p><strong>Adres:</strong> <?php echo esc_html($invoice['customer_address']); ?></p>
+            </div>
+            
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Omschrijving</th>
+                        <th style="text-align: right;">Bedrag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vloerverwarmingsinstallatie</td>
+                        <td style="text-align: right;">€ <?php echo number_format($invoice['subtotal'], 2, ',', '.'); ?></td>
+                    </tr>
+                    <tr>
+                        <td>BTW (21%)</td>
+                        <td style="text-align: right;">€ <?php echo number_format($invoice['vat_amount'], 2, ',', '.'); ?></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Totaal</td>
+                        <td style="text-align: right;">€ <?php echo number_format($invoice['total_amount'], 2, ',', '.'); ?></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="payment-info">
+                <h3>Betalingsgegevens</h3>
+                <p><strong>Rekeningnummer:</strong> NL12 ABCD 0123 4567 89</p>
+                <p><strong>Ten name van:</strong> EVS Vloerverwarmingen</p>
+                <p><strong>Onder vermelding van:</strong> <?php echo esc_html($invoice['invoice_number']); ?></p>
+                <p><strong>Betalingstermijn:</strong> 30 dagen</p>
+            </div>
+            
+            <script>
+                // Auto-print when opened
+                window.onload = function() {
+                    window.print();
+                };
+            </script>
+        </body>
+        </html>
+        <?php
     }
 }
 

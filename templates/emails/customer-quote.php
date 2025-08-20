@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Load email header
-$this->get_email_header($email_heading);
+$email_service->get_email_header($email_heading);
 
 ?>
 <p>Beste <?php echo esc_html($quote_data['naam']); ?>,</p>
@@ -22,7 +22,7 @@ $this->get_email_header($email_heading);
     </tr>
     <tr>
         <th>Type Vloer</th>
-        <td><?php echo esc_html($this->format_field_value('type_vloer', $quote_data['type_vloer'])); ?></td>
+        <td><?php echo esc_html($email_service->format_field_value('type_vloer', $quote_data['type_vloer'])); ?></td>
     </tr>
     <tr>
         <th>Oppervlakte</th>
@@ -83,11 +83,48 @@ $btw_amount  = $total_price - $sub_total;
     <li>Betaling dient te geschieden binnen 14 dagen na factuurdatum.</li>
 </ul>
 
-<p>Indien u akkoord gaat met deze offerte, kunt u reageren op deze e-mail om de werkzaamheden in te plannen.</p>
+<?php
+// Generate secure acceptance links
+$accept_url = add_query_arg([
+    'evs_action' => 'accept_quote',
+    'quote_id' => $quote_id,
+    'token' => wp_hash('accept_' . $quote_id . '_' . $quote_data['email'])
+], home_url());
+
+$decline_url = add_query_arg([
+    'evs_action' => 'decline_quote', 
+    'quote_id' => $quote_id,
+    'token' => wp_hash('decline_' . $quote_id . '_' . $quote_data['email'])
+], home_url());
+?>
+
+<div style="text-align: center; margin: 30px 0;">
+    <h3>Wat is uw beslissing?</h3>
+    <p>Klik op één van onderstaande knoppen om uw keuze door te geven:</p>
+    
+    <table style="margin: 20px auto;">
+        <tr>
+            <td style="padding: 10px;">
+                <a href="<?php echo esc_url($accept_url); ?>" 
+                   style="background-color: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                    ✅ Offerte Accepteren
+                </a>
+            </td>
+            <td style="padding: 10px;">
+                <a href="<?php echo esc_url($decline_url); ?>" 
+                   style="background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                    ❌ Offerte Afwijzen
+                </a>
+            </td>
+        </tr>
+    </table>
+    
+    <p><small>Of reageer op deze e-mail voor vragen of wijzigingen.</small></p>
+</div>
 
 <p>Met vriendelijke groet,<br>Het team van EVS Vloerverwarming</p>
 
 <?php
 
 // Load email footer
-$this->get_email_footer();
+$email_service->get_email_footer();

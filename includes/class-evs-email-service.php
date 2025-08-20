@@ -62,6 +62,21 @@ class EVS_Email_Service {
     }
 
     /**
+     * Send invoice to customer.
+     */
+    public function send_invoice_to_customer($invoice_data, $invoice_id) {
+        if (empty($invoice_data['customer_email'])) {
+            return false;
+        }
+
+        $to = $invoice_data['customer_email'];
+        $subject = 'Uw factuur van EVS Vloerverwarmingen - #' . $invoice_data['invoice_number'];
+        $message = $this->generate_invoice_email_content($invoice_data, $invoice_id);
+
+        return $this->_send_mail($to, $subject, $message);
+    }
+
+    /**
      * Centralized mail sending function.
      */
     private function _send_mail($to, $subject, $message) {
@@ -70,7 +85,13 @@ class EVS_Email_Service {
         
         // Gebruik de robuuste WordPress-manier om de host te krijgen.
         $site_host = wp_parse_url(get_site_url(), PHP_URL_HOST);
-        $from_email = 'noreply@' . preg_replace('#^www\.#' , '', $site_host);
+        
+        // Fix localhost issue for development
+        if ($site_host === 'localhost' || strpos($site_host, 'localhost') !== false) {
+            $from_email = $admin_email; // Use admin email for localhost
+        } else {
+            $from_email = 'noreply@' . preg_replace('#^www\.#' , '', $site_host);
+        }
 
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
@@ -81,9 +102,24 @@ class EVS_Email_Service {
         $sent = wp_mail($to, $subject, $message, $headers);
 
         if (!$sent) {
+            $error_details = [
+                'to' => $to,
+                'subject' => $subject,
+                'from_email' => $from_email,
+                'headers' => $headers,
+                'message_length' => strlen($message)
+            ];
             error_log(
-                'EVS Plugin: Email failed to send. To: ' . $to . ' Subject: ' . $subject
+                'EVS Plugin: Email failed to send. Details: ' . print_r($error_details, true)
             );
+            
+            // Also log WordPress mail errors if available
+            global $phpmailer;
+            if (isset($phpmailer) && !empty($phpmailer->ErrorInfo)) {
+                error_log('EVS Plugin: PHPMailer Error: ' . $phpmailer->ErrorInfo);
+            }
+        } else {
+            error_log('EVS Plugin: Email sent successfully to: ' . $to . ' Subject: ' . $subject);
         }
 
         return $sent;
@@ -94,6 +130,7 @@ class EVS_Email_Service {
      */
     private function get_templated_email_content($template_name, $args) {
         extract($args);
+        $email_service = $this; // Make email service available in template
         ob_start();
         include(EVS_IMPROVED_PATH . 'templates/emails/' . $template_name);
         return ob_get_clean();
@@ -120,6 +157,14 @@ class EVS_Email_Service {
             'quote_data' => $quote_data,
             'quote_id' => $quote_id,
             'email_heading' => 'Uw Offerte #' . $quote_id,
+        ]);
+    }
+
+    private function generate_invoice_email_content($invoice_data, $invoice_id) {
+        return $this->get_templated_email_content('customer-invoice.php', [
+            'invoice_data' => $invoice_data,
+            'invoice_id' => $invoice_id,
+            'email_heading' => 'Uw Factuur #' . $invoice_data['invoice_number'],
         ]);
     }
 

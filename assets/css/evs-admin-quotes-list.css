@@ -32,16 +32,44 @@
     border: 1px solid #FECACA;
 }
 .status-sent {
-    background: #E53E3E;
+    background: #3B82F6;
 }
 .status-accepted {
-    background: #DC2626;
+    background: #10B981;
+    animation: pulse 2s infinite;
+}
+.status-declined {
+    background: #EF4444;
+}
+.status-invoiced {
+    background: #8B5CF6;
 }
 .status-completed {
-    background: #991B1B;
+    background: #059669;
 }
 .status-cancelled {
     background: #6B7280;
+}
+
+/* Pulse animation for accepted quotes */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Special styling for accepted quote actions */
+.quote-actions .button-primary {
+    position: relative;
+}
+
+.status-accepted + .quote-actions .button-primary::before {
+    content: "🎉 ";
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
 }
 .wp-list-table th {
     white-space: nowrap;

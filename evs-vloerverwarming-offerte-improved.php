@@ -109,6 +109,9 @@ final class EVS_Vloerverwarming_Offerte_Improved {
         // Admin AJAX handlers
         add_action('wp_ajax_evs_calculate_admin_price', array($this, 'calculate_admin_price'));
         
+        // Quote acceptance handlers (public endpoints)
+        add_action('init', array($this, 'handle_quote_actions'));
+        
         // Admin hooks are now handled within the EVS_Admin_Manager class constructor.
     }
     
@@ -165,19 +168,109 @@ final class EVS_Vloerverwarming_Offerte_Improved {
     }
     
     /**
-     * Log JavaScript errors
+     * Log JavaScript errors from the frontend
      */
     public function log_js_error() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'evs_form_nonce')) {
-            wp_send_json_error('Security check failed');
+        if (isset($_POST['error_message'])) {
+            error_log('EVS Frontend JS Error: ' . sanitize_text_field($_POST['error_message']));
+        }
+        wp_die();
+    }
+    
+    /**
+     * Handle quote acceptance/decline actions from email links
+     */
+    public function handle_quote_actions() {
+        if (!isset($_GET['evs_action']) || !isset($_GET['quote_id']) || !isset($_GET['token'])) {
+            return;
         }
         
-        $error_message = sanitize_text_field($_POST['error'] ?? 'Unknown JS Error');
-        $error_data = isset($_POST['data']) ? json_decode(stripslashes($_POST['data']), true) : array();
-
-        $this->log_error('JavaScript Error: ' . $error_message, $error_data);
-
-        wp_send_json_success(); // End script gracefully
+        $action = sanitize_key($_GET['evs_action']);
+        $quote_id = intval($_GET['quote_id']);
+        $token = sanitize_text_field($_GET['token']);
+        
+        // Get quote data for validation
+        $quote = $this->database_manager->get_quote($quote_id);
+        if (!$quote) {
+            wp_die('Offerte niet gevonden.');
+        }
+        
+        // Verify token security
+        $expected_token = '';
+        if ($action === 'accept_quote') {
+            $expected_token = wp_hash('accept_' . $quote_id . '_' . $quote['email']);
+            $new_status = 'accepted';
+            $message = 'Bedankt! Uw offerte is geaccepteerd. Wij nemen binnenkort contact met u op.';
+            $admin_message = 'Offerte #' . $quote_id . ' is geaccepteerd door ' . $quote['naam'];
+        } elseif ($action === 'decline_quote') {
+            $expected_token = wp_hash('decline_' . $quote_id . '_' . $quote['email']);
+            $new_status = 'declined';
+            $message = 'Uw offerte is afgewezen. Bedankt voor uw interesse.';
+            $admin_message = 'Offerte #' . $quote_id . ' is afgewezen door ' . $quote['naam'];
+        } else {
+            wp_die('Ongeldige actie.');
+        }
+        
+        if (!hash_equals($expected_token, $token)) {
+            wp_die('Ongeldig token.');
+        }
+        
+        // Update quote status
+        $result = $this->database_manager->update_quote($quote_id, ['status' => $new_status]);
+        
+        if ($result === true) {
+            // Send notification to admin
+            $admin_email = get_option('admin_email');
+            wp_mail(
+                $admin_email,
+                'EVS Offerte Status Update - #' . $quote_id,
+                $admin_message . "\n\nBekijk de offerte in het admin dashboard.",
+                ['Content-Type: text/plain; charset=UTF-8']
+            );
+            
+            // Show success page
+            $this->show_quote_action_result($message, $new_status);
+        } else {
+            wp_die('Fout bij het bijwerken van de offerte status.');
+        }
+    }
+    
+    /**
+     * Show result page after quote action
+     */
+    private function show_quote_action_result($message, $status) {
+        $title = $status === 'accepted' ? 'Offerte Geaccepteerd' : 'Offerte Afgewezen';
+        $color = $status === 'accepted' ? '#28a745' : '#dc3545';
+        
+        ?>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title><?php echo esc_html($title); ?></title>
+            <style>
+                body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f8f9fa; }
+                .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                .icon { font-size: 64px; margin-bottom: 20px; }
+                .title { color: <?php echo $color; ?>; margin-bottom: 20px; }
+                .message { font-size: 18px; line-height: 1.6; color: #333; }
+                .footer { margin-top: 30px; font-size: 14px; color: #666; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="icon"><?php echo $status === 'accepted' ? '✅' : '❌'; ?></div>
+                <h1 class="title"><?php echo esc_html($title); ?></h1>
+                <p class="message"><?php echo esc_html($message); ?></p>
+                <div class="footer">
+                    <strong>EVS Vloerverwarmingen</strong><br>
+                    Voor vragen kunt u contact met ons opnemen.
+                </div>
+            </div>
+        </body>
+        </html>
+        <?php
+        exit;
     }
     
     /**

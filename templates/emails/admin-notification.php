@@ -38,7 +38,7 @@ do_action('evs_email_header', $email_heading);
     </tr>
     <tr>
         <th>Type Vloer</th>
-        <td><?php echo esc_html($this->format_field_value('type_vloer', $quote_data['type_vloer'])); ?></td>
+        <td><?php echo esc_html($email_service->format_field_value('type_vloer', $quote_data['type_vloer'])); ?></td>
     </tr>
     <tr>
         <th>Oppervlakte</th>
@@ -46,23 +46,23 @@ do_action('evs_email_header', $email_heading);
     </tr>
     <tr>
         <th>Verdieping</th>
-        <td><?php echo esc_html($this->format_field_value('verdieping', $quote_data['verdieping'], $quote_data['verdieping_anders'] ?? null)); ?></td>
+        <td><?php echo esc_html($email_service->format_field_value('verdieping', $quote_data['verdieping'], $quote_data['verdieping_anders'] ?? null)); ?></td>
     </tr>
     <tr>
         <th>Warmtebron</th>
-        <td><?php echo esc_html($this->format_field_value('warmtebron', $quote_data['warmtebron'])); ?></td>
+        <td><?php echo esc_html($email_service->format_field_value('warmtebron', $quote_data['warmtebron'])); ?></td>
     </tr>
     <tr>
         <th>Verdeler Aansluiten</th>
-        <td><?php echo esc_html($this->format_field_value('verdeler_aansluiten', $quote_data['verdeler_aansluiten'])); ?></td>
+        <td><?php echo esc_html($email_service->format_field_value('verdeler_aansluiten', $quote_data['verdeler_aansluiten'])); ?></td>
     </tr>
     <tr>
         <th>Vloer Dichtsmeren</th>
-        <td><?php echo esc_html($this->format_field_value('vloer_dichtsmeren', $quote_data['vloer_dichtsmeren'])); ?></td>
+        <td><?php echo esc_html($email_service->format_field_value('vloer_dichtsmeren', $quote_data['vloer_dichtsmeren'])); ?></td>
     </tr>
     <tr>
         <th>Gewenste Montagedatum</th>
-        <td><?php echo esc_html($this->format_field_value('montagedatum_type', $quote_data['montagedatum_type'], $quote_data['montagedatum'] ?? null)); ?></td>
+        <td><?php echo esc_html($email_service->format_field_value('montagedatum_type', $quote_data['montagedatum_type'], $quote_data['montagedatum'] ?? null)); ?></td>
     </tr>
     <tr>
         <th>Opmerkingen Klant</th>

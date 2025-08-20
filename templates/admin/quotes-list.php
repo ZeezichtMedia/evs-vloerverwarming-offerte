@@ -66,7 +66,10 @@
                                    class="button button-small button-primary">Versturen</a>
                             <?php endif; ?>
                             
-                            <?php if ($quote['status'] === 'goedgekeurd'): ?>
+                            <?php if ($quote['status'] === 'accepted'): ?>
+                                <a href="<?php echo add_query_arg(['page' => 'evs-edit-quote', 'quote_id' => $quote['id']], admin_url('admin.php')); ?>" 
+                                   class="button button-small button-primary">🎉 Factuur Maken</a>
+                            <?php elseif ($quote['status'] === 'goedgekeurd'): ?>
                                 <a href="<?php echo wp_nonce_url('?page=evs-offertes&action=create_invoice&quote_id=' . $quote['id'], 'evs_admin_action'); ?>" 
                                    class="button button-small">Factuur maken</a>
                             <?php endif; ?>
