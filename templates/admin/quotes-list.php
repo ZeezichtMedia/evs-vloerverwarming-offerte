@@ -2,10 +2,10 @@
     <h1 class="wp-heading-inline">EVS Offertes</h1>
     
     <ul class="subsubsub">
-        <li><a href="?page=evs-offertes&status=all" <?php echo $current_status === 'all' ? 'class="current"' : ''; ?>>Alle <span class="count">(<?php echo esc_html($status_counts['all'] ?? 0); ?>)</span></a> |</li>
-        <li><a href="?page=evs-offertes&status=pending" <?php echo $current_status === 'pending' ? 'class="current"' : ''; ?>>In behandeling <span class="count">(<?php echo esc_html($status_counts['pending'] ?? 0); ?>)</span></a> |</li>
-        <li><a href="?page=evs-offertes&status=sent" <?php echo $current_status === 'sent' ? 'class="current"' : ''; ?>>Verzonden <span class="count">(<?php echo esc_html($status_counts['sent'] ?? 0); ?>)</span></a> |</li>
-        <li><a href="?page=evs-offertes&status=accepted" <?php echo $current_status === 'accepted' ? 'class="current"' : ''; ?>>Geaccepteerd <span class="count">(<?php echo esc_html($status_counts['accepted'] ?? 0); ?>)</span></a> |</li>
+        <li><a href="?page=evs-offertes&status=all" <?php echo $current_status === 'all' ? 'class="current"' : ''; ?>>Alle <span class="count">(<?php echo esc_html($status_counts['all'] ?? 0); ?>)</span></a></li>
+        <li><a href="?page=evs-offertes&status=pending" <?php echo $current_status === 'pending' ? 'class="current"' : ''; ?>>In behandeling <span class="count">(<?php echo esc_html($status_counts['pending'] ?? 0); ?>)</span></a></li>
+        <li><a href="?page=evs-offertes&status=sent" <?php echo $current_status === 'sent' ? 'class="current"' : ''; ?>>Verzonden <span class="count">(<?php echo esc_html($status_counts['sent'] ?? 0); ?>)</span></a></li>
+        <li><a href="?page=evs-offertes&status=accepted" <?php echo $current_status === 'accepted' ? 'class="current"' : ''; ?>>Geaccepteerd <span class="count">(<?php echo esc_html($status_counts['accepted'] ?? 0); ?>)</span></a></li>
         <li><a href="?page=evs-offertes&status=completed" <?php echo $current_status === 'completed' ? 'class="current"' : ''; ?>>Voltooid <span class="count">(<?php echo esc_html($status_counts['completed'] ?? 0); ?>)</span></a></li>
     </ul>
     

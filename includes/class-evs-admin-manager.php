@@ -575,7 +575,8 @@ class EVS_Admin_Manager {
             'accepted' => 'Geaccepteerd',
             'declined' => 'Afgewezen',
             'invoiced' => 'Gefactureerd',
-            'completed' => 'Voltooid'
+            'completed' => 'Voltooid',
+            'new' => 'Nieuw'
         );
         
         return $statuses[$status] ?? $status;

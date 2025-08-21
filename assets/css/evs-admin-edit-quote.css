@@ -1,34 +1,71 @@
-/* Header Styling */
+/* Import EVS Variables - Red Brand Colors */
+:root {
+    --evs-primary: #dc2626;
+    --evs-secondary: #ef4444;
+    --evs-success: #059669;
+    --evs-warning: #d97706;
+    --evs-danger: #b91c1c;
+    --evs-info: #0891b2;
+    --evs-light: #fef2f2;
+    --evs-dark: #1e293b;
+    --evs-border: #fecaca;
+    --evs-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Modern Header Styling */
+.wrap h1 {
+    color: var(--evs-primary);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.wrap h1::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--evs-primary), var(--evs-secondary));
+    border-radius: 2px;
+}
+
 .evs-edit-header {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
     padding: 20px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 8px;
-    border-bottom: 2px solid #E53E3E;
+    background: linear-gradient(135deg, var(--evs-light) 0%, #ffffff 100%);
+    border-radius: 12px;
+    border: 1px solid var(--evs-border);
+    box-shadow: var(--evs-shadow);
     margin: -10px -20px 20px -20px;
 }
+
 .evs-back-link {
     display: inline-flex;
     align-items: center;
     text-decoration: none;
-    color: #E53E3E;
+    color: var(--evs-primary);
     font-weight: 600;
     margin-right: 20px;
     padding: 10px 16px;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: all 0.2s ease;
     background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: var(--evs-shadow);
+    border: 1px solid var(--evs-border);
 }
+
 .evs-back-link:hover {
-    background-color: #E53E3E;
+    background: var(--evs-primary);
     color: white;
     text-decoration: none;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(229, 62, 62, 0.3);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
+
 .evs-back-link .dashicons {
     margin-right: 6px;
 }
@@ -55,7 +92,7 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 .evs-form-section h2 {
-    background: #E53E3E;
+    background: linear-gradient(135deg, var(--evs-primary), var(--evs-secondary));
     color: white;
     margin: 0;
     padding: 16px 24px;
@@ -101,8 +138,8 @@
 .evs-form-section input:focus,
 .evs-form-section select:focus,
 .evs-form-section textarea:focus {
-    border-color: #E53E3E;
-    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+    border-color: var(--evs-primary);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     outline: none;
 }
 
@@ -114,14 +151,27 @@
 }
 .evs-price-preview {
     background: white;
-    border: 2px solid #E53E3E;
+    border: 2px solid var(--evs-primary);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.1);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+    position: relative;
+    overflow: hidden;
 }
+
+.evs-price-preview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--evs-primary), var(--evs-secondary), var(--evs-success));
+}
+
 .evs-price-preview h4 {
-    color: #E53E3E;
+    color: var(--evs-primary);
     margin: 0 0 16px 0;
     font-size: 18px;
     font-weight: 600;
@@ -148,12 +198,16 @@
 .evs-price-total {
     font-weight: bold;
     font-size: 18px;
-    color: #E53E3E;
-    border-top: 2px solid #E53E3E;
+    color: var(--evs-primary);
+    border-top: 2px solid var(--evs-primary);
     padding-top: 12px;
     margin-top: 12px;
     display: flex;
     justify-content: space-between;
+    background: linear-gradient(135deg, var(--evs-light), #ffffff);
+    padding: 16px;
+    border-radius: 8px;
+    margin: 12px -4px 0 -4px;
 }
 .evs-strekkende-meter {
     background: #f8f9fa;
@@ -169,15 +223,28 @@
     position: sticky;
     bottom: 0;
     background: white;
-    border: 2px solid #E53E3E;
+    border: 2px solid var(--evs-primary);
     border-radius: 12px;
     padding: 24px;
     margin-top: 30px;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    box-shadow: var(--evs-shadow);
+    position: relative;
+    overflow: hidden;
 }
+
+.evs-action-buttons::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--evs-primary), var(--evs-secondary), var(--evs-success));
+}
+
 .evs-action-buttons h3 {
     margin-top: 0;
-    color: #E53E3E;
+    color: var(--evs-primary);
     font-size: 18px;
     font-weight: 600;
     display: flex;
@@ -223,15 +290,29 @@
     margin-right: 8px;
 }
 .evs-btn-primary {
-    background: linear-gradient(135deg, #E53E3E 0%, #c53030 100%);
+    background: linear-gradient(135deg, var(--evs-primary), var(--evs-secondary));
     color: white;
-    box-shadow: 0 4px 8px rgba(229, 62, 62, 0.3);
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
 }
+
 .evs-btn-primary:hover {
-    background: linear-gradient(135deg, #c53030 0%, #a02626 100%);
+    background: linear-gradient(135deg, var(--evs-danger), var(--evs-primary));
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(229, 62, 62, 0.4);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+.evs-btn-success {
+    background: linear-gradient(135deg, var(--evs-success), #10b981);
+    color: white;
+    box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+}
+
+.evs-btn-success:hover {
+    background: linear-gradient(135deg, #047857, var(--evs-success));
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
 }
 .evs-btn-secondary {
     background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
@@ -354,13 +435,17 @@
 }
 .price-sidebar .price-value {
     font-weight: 600;
-    color: #E53E3E;
+    color: var(--evs-primary);
 }
 .price-sidebar .total-price {
-    border-top: 2px solid #E53E3E;
+    border-top: 2px solid var(--evs-primary);
     padding-top: 12px;
     margin-top: 8px;
     font-size: 16px;
+    background: linear-gradient(135deg, var(--evs-light), #ffffff);
+    padding: 16px;
+    border-radius: 8px;
+    margin: 8px -4px 0 -4px;
 }
 .price-sidebar .total-price .price-value {
     font-size: 18px;

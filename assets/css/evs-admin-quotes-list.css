@@ -1,79 +1,396 @@
+/* EVS Modern Admin Styling - Red Brand Colors */
+:root {
+    --evs-primary: #dc2626;
+    --evs-secondary: #ef4444;
+    --evs-success: #059669;
+    --evs-warning: #d97706;
+    --evs-danger: #b91c1c;
+    --evs-info: #0891b2;
+    --evs-light: #fef2f2;
+    --evs-dark: #1e293b;
+    --evs-border: #fecaca;
+    --evs-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* EVS Header Styling - Force Left Aligned */
+.wrap h1.wp-heading-inline {
+    color: var(--evs-dark);
+    font-weight: 600;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+    padding: 0;
+    position: relative;
+    text-align: left !important;
+    float: none !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+.wrap h1.wp-heading-inline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--evs-primary);
+    border-radius: 1px;
+    opacity: 0.6;
+}
+
+/* Modern Table Actions */
 .evs-table-actions {
     white-space: nowrap;
+    display: flex;
+    gap: 6px;
+    align-items: center;
 }
+
 .evs-table-actions .button {
-    margin-right: 5px;
-    margin-bottom: 2px;
-    font-size: 11px;
-    padding: 2px 8px;
+    font-size: 12px;
+    padding: 6px 12px;
     height: auto;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
-.evs-table-actions {
+
+.quote-actions {
     white-space: nowrap;
+    display: flex;
+    gap: 6px;
+    align-items: center;
 }
-.evs-table-actions .button {
-    margin-right: 5px;
-    margin-bottom: 2px;
-    font-size: 11px;
-    padding: 2px 8px;
-    height: auto;
-}
+/* Enhanced Status Badges */
 .status-badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 600;
     color: white;
     text-transform: capitalize;
-}
-.status-pending {
-    background: #fef2f2;
-    color: #B91C1C;
-    border: 1px solid #FECACA;
-}
-.status-sent {
-    background: #3B82F6;
-}
-.status-accepted {
-    background: #10B981;
-    animation: pulse 2s infinite;
-}
-.status-declined {
-    background: #EF4444;
-}
-.status-invoiced {
-    background: #8B5CF6;
-}
-.status-completed {
-    background: #059669;
-}
-.status-cancelled {
-    background: #6B7280;
-}
-
-/* Pulse animation for accepted quotes */
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-/* Special styling for accepted quote actions */
-.quote-actions .button-primary {
+    box-shadow: var(--evs-shadow);
     position: relative;
+    overflow: hidden;
 }
 
-.status-accepted + .quote-actions .button-primary::before {
-    content: "🎉 ";
-    animation: bounce 1s infinite;
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.status-badge:hover::before {
+    left: 100%;
+}
+/* Improved Status Colors with Consistent Icons */
+.status-pending {
+    background: linear-gradient(135deg, var(--evs-warning), #f59e0b);
+    color: white;
+}
+.status-pending::after { content: '🕐'; }
+
+.status-sent {
+    background: linear-gradient(135deg, var(--evs-info), #0ea5e9);
+    color: white;
+}
+.status-sent::after { content: '📤'; }
+
+.status-accepted {
+    background: linear-gradient(135deg, #10b981, var(--evs-success));
+    color: white;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+}
+.status-accepted::after { content: '✅'; }
+
+.status-declined {
+    background: linear-gradient(135deg, var(--evs-danger), #ef4444);
+    color: white;
+}
+.status-declined::after { content: '❌'; }
+
+.status-invoiced {
+    background: linear-gradient(135deg, var(--evs-success), #059669);
+    color: white;
+}
+.status-invoiced::after { content: '🧾'; }
+
+.status-completed {
+    background: linear-gradient(135deg, var(--evs-success), #047857);
+    color: white;
+}
+.status-completed::after { content: '🎉'; }
+
+.status-cancelled {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+}
+.status-cancelled::after { content: '🚫'; }
+
+.status-new {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+.status-new::after { content: '✨'; }
+
+.status-empty,
+.status- {
+    background: linear-gradient(135deg, #9ca3af, #6b7280);
+    color: white;
+}
+.status-empty::after,
+.status-::after { content: '—'; }
+
+/* Enhanced Pulse Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+/* Modern Button Styling */
+.quote-actions .button {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.quote-actions .button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--evs-shadow);
+}
+
+.quote-actions .button-primary {
+    background: linear-gradient(135deg, var(--evs-primary), var(--evs-secondary));
+    border-color: var(--evs-primary);
+    color: white;
+}
+
+.quote-actions .button-primary:hover {
+    background: linear-gradient(135deg, #1e3a8a, var(--evs-primary));
+    border-color: #1e3a8a;
+}
+
+/* Special styling for accepted quotes */
+.status-accepted + td .button-primary {
+    background: linear-gradient(135deg, var(--evs-success), #059669);
+    border-color: var(--evs-success);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 5px var(--evs-success); }
+    to { box-shadow: 0 0 20px var(--evs-success), 0 0 30px var(--evs-success); }
 }
 
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-2px); }
 }
+/* Enhanced Table Styling */
+.wp-list-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--evs-shadow);
+    border: 1px solid var(--evs-border);
+}
+
+/* Right-align numeric columns */
+.wp-list-table td:nth-child(5),
+.wp-list-table td:nth-child(6),
+.wp-list-table th:nth-child(5),
+.wp-list-table th:nth-child(6) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Fix Acties column alignment and button styling */
+.wp-list-table td:nth-child(9),
+.wp-list-table th:nth-child(9) {
+    text-align: left;
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.wp-list-table .quote-actions {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Enhanced button styling with proper padding */
+.quote-actions .button {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    height: auto !important;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    margin: 0 !important;
+}
+
+.quote-actions .button-small {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+}
+
+.quote-actions .button-primary {
+    background: linear-gradient(135deg, var(--evs-primary), var(--evs-secondary));
+    border-color: var(--evs-primary);
+    color: white;
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.2);
+}
+
+.quote-actions .button-primary:hover {
+    background: linear-gradient(135deg, var(--evs-danger), var(--evs-primary));
+    border-color: var(--evs-danger);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+}
+
+.quote-actions .button:not(.button-primary) {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+    color: var(--evs-dark);
+}
+
+.quote-actions .button:not(.button-primary):hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+}
+
 .wp-list-table th {
     white-space: nowrap;
+    background: linear-gradient(135deg, var(--evs-light), #ffffff);
+    color: var(--evs-dark);
+    font-weight: 600;
+    border-bottom: 2px solid var(--evs-border);
+    padding: 12px 8px;
 }
+
+.wp-list-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid var(--evs-border);
+    vertical-align: middle;
+}
+
 .wp-list-table .column-actions {
     width: 200px;
+}
+
+.wp-list-table tbody tr:hover {
+    background-color: var(--evs-light);
+    transition: background-color 0.2s ease;
+}
+
+/* Minimalistic Subsubsub Navigation */
+.subsubsub {
+    margin: 0 0 2rem 0;
+    padding: 0;
+    background: transparent;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+.subsubsub li {
+    margin: 0;
+    display: flex;
+    position: relative;
+}
+
+.subsubsub li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px 16px 20px;
+    text-decoration: none;
+    color: #6b7280;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    position: relative;
+    border-bottom: 3px solid transparent;
+}
+
+.subsubsub li a:hover {
+    color: var(--evs-primary);
+    background: transparent;
+}
+
+.subsubsub li a.current {
+    color: var(--evs-dark);
+    background: transparent;
+    border-bottom-color: var(--evs-primary);
+    font-weight: 600;
+}
+
+/* Compact Badge Styling */
+.subsubsub .count {
+    background: #f3f4f6;
+    color: var(--evs-primary);
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    line-height: 1;
+}
+
+.subsubsub li a.current .count {
+    background: var(--evs-primary);
+    color: white;
+}
+
+.subsubsub li a:hover .count {
+    background: var(--evs-primary);
+    color: white;
+}
+
+/* Customer Info Styling */
+.wp-list-table td strong {
+    color: var(--evs-primary);
+    font-weight: 600;
+}
+
+.wp-list-table td a[href^="mailto:"] {
+    color: var(--evs-info);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.wp-list-table td a[href^="mailto:"]:hover {
+    color: var(--evs-primary);
+    text-decoration: underline;
 }
