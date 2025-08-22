@@ -77,7 +77,8 @@ class EVS_Offertes_List_Table extends WP_List_Table {
             'sent' => '<span class="evs-status-sent">Verzonden</span>',
             'approved' => '<span class="evs-status-approved">Goedgekeurd</span>',
             'completed' => '<span class="evs-status-completed">Voltooid</span>',
-            'cancelled' => '<span class="evs-status-cancelled">Geannuleerd</span>'
+            'cancelled' => '<span class="evs-status-cancelled">Geannuleerd</span>',
+            'new' => '<span class="evs-status-new">Nieuw</span>'
         ];
         return isset($statuses[$status]) ? $statuses[$status] : $status;
     }

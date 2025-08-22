@@ -3,7 +3,7 @@
  * Plugin Name: EVS Vloerverwarming Offerte
  * Plugin URI: https://evs-vloerverwarmingen.nl
  * Description: Professioneel offerte- en factuursysteem voor vloerverwarming installaties met moderne architectuur
- * Version: 4.0.0
+ * Version: 4.0.3
  * Author: EVS Vloerverwarmingen
  * Author URI: https://evs-vloerverwarmingen.nl
  * Text Domain: evs-vloerverwarming
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants - with defensive checks for WordPress functions
-define('EVS_PLUGIN_VERSION', '4.0.0');
+define('EVS_PLUGIN_VERSION', '4.0.3');
 
 // Only define these constants if WordPress functions are available
 if (function_exists('plugin_dir_path')) {

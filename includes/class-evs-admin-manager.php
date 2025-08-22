@@ -37,7 +37,7 @@ class EVS_Admin_Manager {
         add_menu_page(
             'EVS Offertes',
             'EVS Offertes',
-            'manage_options',
+            'edit_posts',
             'evs-offertes',
             array($this, 'display_quotes_page'),
             'dashicons-clipboard',
@@ -48,7 +48,7 @@ class EVS_Admin_Manager {
             'evs-offertes',
             'Alle Offertes',
             'Alle Offertes',
-            'manage_options',
+            'edit_posts',
             'evs-offertes',
             array($this, 'display_quotes_page')
         );
@@ -57,7 +57,7 @@ class EVS_Admin_Manager {
             'evs-offertes',
             'Facturen',
             'Facturen',
-            'manage_options',
+            'edit_posts',
             'evs-invoices',
             array($this, 'display_invoices_page')
         );
@@ -66,7 +66,7 @@ class EVS_Admin_Manager {
             'evs-offertes', // Parent slug
             'Offerte Bewerken', // Page Title
             null, // Menu Title (set to null to hide from menu)
-            'manage_options',
+            'edit_posts',
             'evs-edit-quote',
             array($this, 'display_edit_quote_page')
         );
@@ -75,7 +75,7 @@ class EVS_Admin_Manager {
             'evs-offertes',
             'Instellingen',
             'Instellingen',
-            'manage_options',
+            'edit_posts',
             'evs-settings',
             array($this, 'display_settings_page')
         );
@@ -83,10 +83,12 @@ class EVS_Admin_Manager {
     }
 
     public function enqueue_admin_assets($hook) {
+        // Debug hook name
+        error_log('EVS Admin Hook: ' . $hook);
 
-
-        // Enqueue styles for the main quotes list page
-        if ('toplevel_page_evs-offertes' === $hook) {
+        // Enqueue styles for the main quotes list page - try multiple hook patterns
+        if ('toplevel_page_evs-offertes' === $hook || strpos($hook, 'evs-offertes') !== false) {
+            error_log('EVS: Loading CSS for hook: ' . $hook);
             wp_enqueue_style(
                 'evs-admin-quotes-list',
                 EVS_IMPROVED_URL . 'assets/css/evs-admin-quotes-list.css',
@@ -484,7 +486,7 @@ class EVS_Admin_Manager {
         
         // 5. Perform the specific action based on which button was pressed.
             if (isset($_POST['send_offer'])) {
-                if (!current_user_can('manage_options')) {
+                if (!current_user_can('edit_posts')) {
                     wp_die(__('You do not have sufficient permissions to send quotes.', 'evs-vloerverwarming'));
                 }
                 // Action: Save and Send Offer
@@ -503,7 +505,7 @@ class EVS_Admin_Manager {
                     $this->database_manager->update_quote($quote_id, ['status' => 'sent']);
                 }
             } elseif (isset($_POST['create_invoice'])) {
-                if (!current_user_can('manage_options')) {
+                if (!current_user_can('edit_posts')) {
                     wp_die(__('You do not have sufficient permissions to create invoices.', 'evs-vloerverwarming'));
                 }
                 // Action: Save and Create Invoice
