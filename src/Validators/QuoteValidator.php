@@ -21,7 +21,8 @@ class QuoteValidator extends BaseValidator
         $this->required('customer_email', $data['customer_email'] ?? '', 'E-mailadres is verplicht');
         $this->email('customer_email', $data['customer_email'] ?? '');
 
-        // Phone is optional for now
+        // Phone is now required
+        $this->required('customer_phone', $data['customer_phone'] ?? '', 'Telefoonnummer is verplicht');
         if (!empty($data['customer_phone'])) {
             $this->phone('customer_phone', $data['customer_phone'], 'Ongeldig telefoonnummer');
         }
@@ -95,6 +96,7 @@ class QuoteValidator extends BaseValidator
         }
 
         if (isset($data['customer_phone'])) {
+            $this->required('customer_phone', $data['customer_phone'], 'Telefoonnummer is verplicht');
             $this->phone('customer_phone', $data['customer_phone']);
         }
 

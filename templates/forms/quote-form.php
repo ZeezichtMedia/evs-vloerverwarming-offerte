@@ -350,8 +350,8 @@
                                 <input type="email" id="email" name="email" required>
                             </div>
                             <div class="evs-form-group">
-                                <label for="telefoon">Telefoonnummer:</label>
-                                <input type="tel" id="telefoon" name="telefoon">
+                                <label for="telefoon">Telefoonnummer*:</label>
+                                <input type="tel" id="telefoon" name="telefoon" required>
                             </div>
                         </div>
                         <div class="evs-form-row">
